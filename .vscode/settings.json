@@ -1,0 +1,5 @@
+{
+    "staticWebApps.appSubpath": "/app",
+    "staticWebApps.apiSubpath": "/server",
+    "staticWebApps.appArtifactSubpath": "build"
+}
