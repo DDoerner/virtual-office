@@ -1,15 +1,41 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import { TableAdapter } from "../helpers/table-adapter";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log('HTTP trigger function processed a request.');
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
+    
+    if (!req?.body?.roomId || !req?.body?.username || !req?.body?.peerId) {
+        context.res = {
+            status: 400,
+            body: 'Missing parameters'
+        };
+        return;
+    }
+    
+    const tableAdapter = new TableAdapter();
+    const room = await tableAdapter.getRoom(req.body.roomId);
+    if (!room) {
+        context.res = {
+            status: 400,
+            body: 'Room does not exist'
+        };
+        return;
+    }
 
+    const userId = await tableAdapter.createUser(req.body.roomId, req.body.username, req.body.peerId);
+    context.log('New user created: ' + userId);
+
+    const users = await tableAdapter.getUsers(req.body.roomId);
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: responseMessage
+        body: {
+            users: users.map(u => {
+                return {
+                    peerId: u.peerId,
+                    username: u.username
+                };
+            }),
+            userId
+        }
     };
 
 };

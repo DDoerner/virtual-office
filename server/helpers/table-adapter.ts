@@ -1,0 +1,77 @@
+import azurestorage = require('azure-storage');
+import azstorage = require('azure-storage');
+import { uuid } from 'uuidv4';
+import { BaseEntity, Room, User } from './types';
+
+export class TableAdapter {
+
+    public async createRoom(): Promise<string> {
+        const id = uuid();
+        const room: Room = {
+            id,
+            createdAt: this.getTimestamp()
+        }
+        await this.saveToTable('rooms', room);
+        return id;
+    }
+
+    public async getRoom(id: string): Promise<Room> {
+        const table = azstorage.createTableService(process.env.coronazaehler_STORAGE);
+        const user = await new Promise((resolve) => table.retrieveEntity('rooms', id, id, (err, result, resp) => resolve(result)));
+        return user as Room;
+    }
+
+    public async getUser(id: string): Promise<User> {
+        const table = azstorage.createTableService(process.env.coronazaehler_STORAGE);
+        const user = await new Promise((resolve) => table.retrieveEntity('users', id, id, (err, result, resp) => resolve(result)));
+        return user as User;
+    }
+
+    public async getUsers(roomId: string): Promise<User[]> {
+        var table = azstorage.createTableService(process.env.coronazaehler_STORAGE);
+        const query = new azurestorage.TableQuery().where('roomId eq ?', roomId);
+        const users = await new Promise((resolve) => table.queryEntities('users', query, null, (err, result, resp) => resolve(result.entries)));
+        return users as User[];
+    }
+
+    public async createUser(roomId: string, username: string, peerId: string): Promise<string> {
+        const id = uuid();
+        const now = this.getTimestamp();
+        const user: User = {
+            id,
+            peerId,
+            username,
+            roomId,
+            createdAt: now,
+            updatedAt: now
+        }
+        await this.saveToTable('users', user);
+        return id;
+    }
+
+    private async saveToTable(tableName: string, entity: BaseEntity): Promise<void> {
+        
+        entity['RowKey'] = entity.id;
+        entity['PartitionKey'] = entity.id;
+        entity['Timestamp'] = entity.createdAt;
+
+        const table = azstorage.createTableService(process.env.coronazaehler_STORAGE);
+        const tableObj = this.convertToTableObject(entity);
+        await new Promise((resolve) => 
+            table.insertOrReplaceEntity(tableName, tableObj, () => resolve())
+        );
+    }
+
+    private convertToTableObject(obj: any): Object {
+        const task = {};
+        for (let prop of Object.keys(obj)) {
+            task[prop] = {'_': obj[prop]};
+        }
+        return task;
+    }
+
+    private getTimestamp() {
+        return new Date().toISOString();
+    }
+    
+}
