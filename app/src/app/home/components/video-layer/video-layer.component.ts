@@ -52,6 +52,10 @@ export class VideoLayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.videoController.debugElement = this.debugCanvas;
   }
 
+  onVideoCloseClicked() {
+    this.videoController.setRemoteStream(null);
+  }
+
   ngOnDestroy() {
     this.videoController.streamElement = null;
     this.videoController.debugElement = null;

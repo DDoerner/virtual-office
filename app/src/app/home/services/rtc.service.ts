@@ -30,7 +30,13 @@ export class RtcService {
   constructor(
     private userService: UserService,
     private videoController: VideoController
-  ) { }
+  ) {
+    this.videoController.remoteStream$.subscribe(remoteStream => {
+      if (remoteStream !== null && remoteStream !== undefined) {
+        this.disconnectCall();
+      }
+    });
+  }
 
   public async register(peerId?: string): Promise<string> {
     if (!peerId) {
@@ -178,8 +184,6 @@ export class RtcService {
   private async handleData(peerId: string, data: any) {
     const actionVerb = data.action;
     const value = data.data;
-
-    alert(actionVerb + ' - ' + value);
 
     switch (actionVerb) {
       case 'identity':
