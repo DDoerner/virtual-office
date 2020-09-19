@@ -6,13 +6,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (!req?.query?.userId) {
         context.res = {
             status: 400,
-            body: 'Missing parameters',
-            headers: {   
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET',
-                'Access-Control-Request-Headers': 'X-Custom-Header'
-            }
+            body: 'Missing parameters'
         };
         return;
     }
@@ -22,13 +16,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (!user) {
         context.res = {
             status: 400,
-            body: 'User does not exist',
-            headers: {   
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET',
-                'Access-Control-Request-Headers': 'X-Custom-Header'
-            }
+            body: 'User does not exist'
         };
         return;
     }
@@ -41,13 +29,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 peerId: u.peerId,
                 username: u.username
             };
-        }),
-        headers: {   
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Request-Headers': 'X-Custom-Header'
-        }
+        })
     };
 
 };

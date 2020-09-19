@@ -6,13 +6,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (!req?.body?.roomId || !req?.body?.username || !req?.body?.peerId) {
         context.res = {
             status: 400,
-            body: 'Missing parameters',
-            headers: {   
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET',
-                'Access-Control-Request-Headers': 'X-Custom-Header'
-            }
+            body: 'Missing parameters'
         };
         return;
     }
@@ -22,13 +16,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (!room) {
         context.res = {
             status: 400,
-            body: 'Room does not exist',
-            headers: {   
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET',
-                'Access-Control-Request-Headers': 'X-Custom-Header'
-            }
+            body: 'Room does not exist'
         };
         return;
     }
@@ -38,13 +26,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: userId,
-        headers: {   
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Request-Headers': 'X-Custom-Header'
-        }
+        body: userId
     };
 
 };

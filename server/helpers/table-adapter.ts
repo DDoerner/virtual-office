@@ -75,7 +75,7 @@ export class TableAdapter {
     }
     
     private generateCode(length: number) {
-        var result: string;
+        var result: string = '';
         var chars: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         var charCount = chars.length;
         for ( var i = 0; i < length; i++ ) {
