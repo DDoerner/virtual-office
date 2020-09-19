@@ -1,4 +1,4 @@
-export const TILE_DEFINITION = {
+var TILE_DEFINITION = {
     BOOKSHELF: {
         x_offset: 0,
         y_offset: -1,
@@ -39,11 +39,6 @@ export const TILE_DEFINITION = {
         y_offset: 0,
         spriteDefinition: [[138]]
     },
-    TILE_BALCONY: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[208, 209, 210]]
-    },
     WALL_HIGH_CENTER: {
         x_offset: 0,
         y_offset: -4,
@@ -70,21 +65,6 @@ export const TILE_DEFINITION = {
         y_offset: -4,
         spriteDefinition: [[151]]
     },
-    WALL_LOWER_RIGHT: {
-        x_offset: 0,
-        y_offset: -4,
-        spriteDefinition: [[97],[113],[129],[145]]
-    },
-    WALL_LOWER_LEFT: {
-        x_offset: 0,
-        y_offset: -4,
-        spriteDefinition: [[99],[115],[131],[147]]
-    },
-    WALL_LOWER: {
-        x_offset: 0,
-        y_offset: -4,
-        spriteDefinition: [[98],[114],[130],[146]]
-    },
     CORNER_UP_RIGHT: {
         x_offset: 0,
         y_offset: -4,
@@ -94,35 +74,5 @@ export const TILE_DEFINITION = {
         x_offset: 0,
         y_offset: -4,
         spriteDefinition: [[148]]
-    },
-    COUNTERTOP_UPPER: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[160, 161, 162]]
-    },
-    COUNTERTOP_LOWER: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[176, 177, 178]]
-    },
-    COUNTERTOP_HIGH: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[161, 162],[177, 178]]
-    },
-    COUCH_BLACK: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[163, 164,165,166],[179, 180,181,182]]
-    },
-    CHAIR_UP: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[169,170],[185,186]]
-    },
-    CHAIR_DOWN: {
-        x_offset: 0,
-        y_offset: 0,
-        spriteDefinition: [[167,168],[183,184]]
-    },
+    }
 }

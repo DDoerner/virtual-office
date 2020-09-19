@@ -10,6 +10,7 @@ export class SimCreator {
         const x = grid_x * TILE_WIDTH;
         const y = grid_y * TILE_HEIGHT + TILE_HEIGHT / 4;
         SimCreator.character = scene.add.sprite(x, y, 'character1');
+        const textBanner = scene.add.text(x - 29, y - 40, " Test ", { align: "center", backgroundColor: "rgba(0, 0, 0, 0.5)"})
 
         // scene.anims.create({
         //     key: 'up',
@@ -31,7 +32,7 @@ export class SimCreator {
         //     frames: [9],
         // });
 
-        GameState.instance.addPlayer(new Player('1', SimCreator.character, new Position(grid_x, grid_y), ACTIVITY.IDLE, true));
+        GameState.instance.addPlayer(new Player('1', SimCreator.character, textBanner, new Position(grid_x, grid_y), ACTIVITY.IDLE, true));
 
         return SimCreator.character;
     }
@@ -75,7 +76,18 @@ export class SimCreator {
         return (gameObjects as any).flat(1);
     }
 
-    public drawHorizontalWall(scene: Phaser.Scene, grid_x, grid_y, grid_width, endWallLeft = false, endWallRight= false, lowered= false) {
+
+    public drawBalconyArea(scene: Phaser.Scene, grid_x, grid_y, grid_width, grid_height) {
+        var gameObjects = [];
+        for (var i = 0; i < grid_width; i++) {
+            for (var j = 0; j < grid_height; j++) {
+                gameObjects.push(this.drawObject(scene, grid_x + i, grid_y + j, 'TILE_BALCONY', false, false, false));
+            }
+        }
+        return (gameObjects as any).flat(1);
+    }
+
+    public drawHorizontalWall(scene: Phaser.Scene, grid_x, grid_y, grid_width, endWallLeft = false, endWallRight = false, lowered = false) {
         const gameObjects = [];
         for (let i = 0; i < grid_width; i++) {
             if (i === 0 && endWallLeft) {
@@ -89,7 +101,7 @@ export class SimCreator {
                     gameObjects.push(this.drawObject(scene, grid_x + i, grid_y, 'WALL_LOWER_RIGHT', undefined, true, true));
                 } else if (i === 1) {
                     gameObjects.push(this.drawObject(scene, grid_x + i, grid_y, 'WALL_LOWER_LEFT', undefined, true, true));
-                } else if (i === 0 || i ===  grid_width - 1){
+                } else if (i === 0 || i === grid_width - 1) {
                     gameObjects.push(this.drawObject(scene, grid_x + i, grid_y, 'WALL_HIGH_CENTER', undefined, true, true));
                 } else {
                     gameObjects.push(this.drawObject(scene, grid_x + i, grid_y, 'WALL_LOWER', undefined, true, true));
@@ -139,7 +151,7 @@ export class SimCreator {
             } else if (table === 2) {
                 gameObjects.push(this.drawObject(scene, grid_x, grid_y, shelf[shelfIndex1], true, true, true));
                 gameObjects.push(this.drawObject(scene, grid_x + 1, grid_y, shelf[shelfIndex2], true, true, true));
-            }  else if (table === 0) {
+            } else if (table === 0) {
                 gameObjects.push(this.drawObject(scene, grid_x + 3, grid_y, shelf[shelfIndex1], true, true, true));
                 gameObjects.push(this.drawObject(scene, grid_x + 4, grid_y, shelf[shelfIndex2], true, true, true));
             }
@@ -188,6 +200,24 @@ export class SimCreator {
         this.drawObject(scene, grid_x, grid_y + 1, 'COUNTERTOP_LOWER', true);
         this.drawObject(scene, grid_x, grid_y - 2, 'COUNTERTOP_HIGH', true);
         this.drawObject(scene, grid_x + 1, grid_y - 2, 'COUNTERTOP_HIGH', true, false, false);
+        this.drawObject(scene, grid_x + 1, grid_y + 4, "PLANTS_WIDE", false, false, false);
+        this.drawObject(scene, grid_x + 6, grid_y + 4, "PLANTS_WIDE", false, false, false);
+
+
+        this.drawObject(scene, grid_x + 6, grid_y - 1, "COUCH_BLACK", false, false, false);
+    }
+
+    public drawMeetingRoom(game, grid_x, grid_y, grid_width, grid_height) {
+        this.drawCommunityRoom(game, grid_x, grid_y, grid_width, grid_height)
+        this.drawObject(game, grid_x, grid_y + 1, "CHAIR_DOWN", true, false, false);
+        this.drawObject(game, grid_x + 6, grid_y + 1, "CHAIR_DOWN", true, false, false);
+        this.drawObject(game, grid_x + 2, grid_y + 1, "CHAIR_DOWN", true, false, false);
+        this.drawObject(game, grid_x + 4, grid_y + 1, "CHAIR_DOWN", true, false, false);
+
+        this.drawObject(game, grid_x, grid_y + 4, "CHAIR_UP", false, false, false);
+        this.drawObject(game, grid_x + 6, grid_y + 4, "CHAIR_UP", false, false, false);
+        this.drawObject(game, grid_x + 2, grid_y + 4, "CHAIR_UP", false, false, false);
+        this.drawObject(game, grid_x + 4, grid_y + 4, "CHAIR_UP", false, false, false);
     }
 
     public drawCommunityRoom(scene: Phaser.Scene, grid_x, grid_y, grid_width, grid_height) {
@@ -225,14 +255,18 @@ export class SimCreator {
         }
 
         // some meta stuff
-        this.drawTileArea(scene, 0, 10, this.rooms * (ROOM_WIDTH + 1 ) + 55, 5);
+        this.drawTileArea(scene, 0, 10, this.rooms * (ROOM_WIDTH + 1) + 55, 5);
         this.drawObject(scene, 6, 10, 'SIDEBOARD', true);
-        this.drawObject(scene, 9, 12, 'PLANTS_WIDE', true);
+
 
         SimCreator.character = this.drawCharacter(scene, 5, 10);
 
         this.drawKitchen(scene, 1, 15, 10, 6);
-        this.drawCommunityRoom(scene, 12, 15, 10, 6);
+        scene.add.text(7 * TILE_WIDTH + 19, 13 * TILE_HEIGHT - 25, " EATING ", { fontFamily: '"Fredoka One", cursive', backgroundColor: "#bad4d5", fontSize: 14, color: "black", })
+        this.drawBalconyArea(scene, 0, 21, 12, 4);
+        scene.add.text(0 * TILE_WIDTH + 10, 24 * TILE_HEIGHT - 10, " AWAY FROM KEYBOARD ", { fontFamily: '"Fredoka One", cursive', backgroundColor: "#bad4d5", fontSize: 14, color: "black", })
+        this.drawMeetingRoom(scene, 12, 15, 12, 10)
+        scene.add.text(12 * TILE_WIDTH + 19, 13 * TILE_HEIGHT - 25, " IN CALL ", { fontFamily: '"Fredoka One", cursive', backgroundColor: "#bad4d5", fontSize: 14, color: "black", })
     }
 }
 

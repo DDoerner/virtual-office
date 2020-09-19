@@ -1,0 +1,22 @@
+{
+  "name": "virtual-office",
+  "version": "1.0.0",
+  "description": "virtual-office",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DDoerner/virtual-office.git"
+  },
+  "keywords": [
+    "virtual"
+  ],
+  "author": "round-pancakes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DDoerner/virtual-office/issues"
+  },
+  "homepage": "https://github.com/DDoerner/virtual-office#readme"
+}
