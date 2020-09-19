@@ -3,6 +3,8 @@ import { environment } from 'src/environments/environment';
 
 const USER_ID_STORAGE_KEY = 'virtual-office-user-id';
 const USER_STORAGE_KEY = 'virtual-office-user';
+const USER_ID = 'franzl';
+const ROOM_ID = 'HERE';
 
 @Injectable()
 export class UserService {
@@ -29,12 +31,9 @@ export class UserService {
   }
 
   public async register(user: User): Promise<void> {
-    const userId = await fetch(environment.API_URL + 'register-user', {
-      method: 'POST',
-      body: JSON.stringify(user)
-    }).then(res => res.text());
+    await new Promise(res => setTimeout(res, 1_500));
 
-    user.userId = userId;
+    user.userId = USER_ID;
     this.user = user;
   }
 
@@ -43,10 +42,25 @@ export class UserService {
   }
 
   public async getOtherUsers(): Promise<User[]> {
-    const users = await fetch(environment.API_URL + 'get-users?userId=' + this.userId, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    }).then(res => res.json());
+    await new Promise(res => setTimeout(res, 1_500));
+
+    const users: User[] = [
+      {
+        username: 'Gerda',
+        peerId: 'gerda-5',
+        roomId: ROOM_ID
+      },
+      {
+        username: 'Theo',
+        peerId: 'theo-3',
+        roomId: ROOM_ID
+      },
+      {
+        username: 'Bob',
+        peerId: 'bob-8',
+        roomId: ROOM_ID
+      }
+    ];
     return users;
   }
 

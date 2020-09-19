@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     
     const tableAdapter = new TableAdapter();
-    const user = await tableAdapter.getUser(req.body.userId);
+    const user = await tableAdapter.getUser(req.query.userId);
     if (!user) {
         context.res = {
             status: 400,

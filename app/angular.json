@@ -66,6 +66,14 @@
                 }
               ]
             },
+            "mock": {
+              "fileReplacements": [
+                {
+                  "replace": "src/app/home/services/user.service.ts",
+                  "with": "src/app/home/services/user-mock.service.ts"
+                }
+              ]
+            },
             "ci": {
               "progress": false
             }

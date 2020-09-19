@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { UserService } from './user.service';
-import { uuid } from 'uuidv4';
-import * as Peer from 'peerjs';
+import Peer from 'peerjs';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RtcService {
 
-  private peer: Peer;
+  private peer;
 
   constructor(
     private userService: UserService
   ) { }
 
-  register(): string {
-    const peerId = uuid();
+  public register(): string {
+    const peerId = uuidv4();
     this.connect(peerId);
     return peerId;
   }

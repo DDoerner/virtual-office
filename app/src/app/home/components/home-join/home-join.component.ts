@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService, User } from '../../services/user.service';
 import { RtcService } from '../../services/rtc.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-home-join',
@@ -27,7 +28,7 @@ export class HomeJoinComponent implements OnInit {
     }
   }
 
-  private async onSubmit(form) {
+  private async onSubmit(): Promise<void> {
     const peerId = this.rtcService.register();
     const user: User = {
       peerId,

@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
@@ -13,8 +12,7 @@ export class HomeCreateComponent implements OnInit {
   public roomId: string;
 
   constructor(
-    private loadingController: LoadingController,
-    private httpClient: HttpClient
+    private loadingController: LoadingController
   ) { }
 
   ngOnInit() {
@@ -30,7 +28,7 @@ export class HomeCreateComponent implements OnInit {
     });
     elem.present();
 
-    this.roomId = await this.httpClient.post<string>(environment.API_URL + 'create-room', {}).toPromise();
+    this.roomId = await fetch(environment.API_URL + 'create-room', { method: 'POST' }).then(res => res.text());
 
     this.loadingController.dismiss();
   }

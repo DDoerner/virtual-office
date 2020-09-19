@@ -1,6 +1,6 @@
 import azurestorage = require('azure-storage');
 import azstorage = require('azure-storage');
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 import { BaseEntity, Room, User } from './types';
 
 export class TableAdapter {
@@ -35,7 +35,7 @@ export class TableAdapter {
     }
 
     public async createUser(roomId: string, username: string, peerId: string): Promise<string> {
-        const id = uuid();
+        const id = uuidv4();
         const now = this.getTimestamp();
         const user: User = {
             id,
