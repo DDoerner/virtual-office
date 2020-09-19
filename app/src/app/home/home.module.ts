@@ -12,7 +12,8 @@ import { HomeCreateComponent } from './components/home-create/home-create.compon
 import { RtcService } from './services/rtc.service';
 import { UserService } from './services/user.service';
 import { SimulationComponent } from '../office-sim/simulation/simulation.component';
-import { StatusService } from './services/status.service';
+import { VideoController } from './services/video.controller';
+import { VideoLayerComponent } from './components/video-layer/video-layer.component';
 
 
 @NgModule({
@@ -27,12 +28,13 @@ import { StatusService } from './services/status.service';
     HomeJoinComponent,
     HomeOfficeComponent,
     HomeCreateComponent,
-    SimulationComponent
+    SimulationComponent,
+    VideoLayerComponent
   ],
   providers: [
     RtcService,
     UserService,
-    StatusService
+    VideoController
   ]
 })
 export class HomePageModule {}

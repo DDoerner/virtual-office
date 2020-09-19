@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
+import { filter, take } from 'rxjs/operators';
+import { VideoAnalyzer } from 'src/app/analyzers/video-analyzer';
 import { RtcService } from '../../services/rtc.service';
 import { User, UserService } from '../../services/user.service';
+import { VideoController } from '../../services/video.controller';
 
 @Component({
   selector: 'app-home-office',
@@ -16,15 +19,13 @@ export class HomeOfficeComponent implements OnInit {
   public peers: string[] = [];
   public username: string;
 
-  public myStream: MediaStream;
-  public remoteStream: MediaStream;
-
   constructor(
     private userService: UserService,
     private loadingService: LoadingController,
     private rtcService: RtcService,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private videoController: VideoController
   ) { }
 
   public ngOnInit() {
@@ -74,6 +75,15 @@ export class HomeOfficeComponent implements OnInit {
     // register event handlers
     this.registerEventHandlers();
 
+    this.videoController.requestStreams();
+    this.videoController.myStream$.pipe(
+      filter(myStream => myStream !== null && myStream !== undefined),
+      take(1)
+    ).subscribe(() => {
+      // wait until stream has been received before initializing the analyzer
+      new VideoAnalyzer(this.videoController).initialize();
+    });
+
     this.loadingService.dismiss();
 
     // connect to all peers
@@ -87,22 +97,6 @@ export class HomeOfficeComponent implements OnInit {
   private registerEventHandlers() {
 
     this.rtcService.activeConnections$.subscribe(connections => this.peers = connections);
-
-    this.rtcService.activeStreams$.subscribe(streams => {
-      const [myStream, remoteStream] = streams;
-      this.myStream = myStream;
-      this.remoteStream = remoteStream;
-      const myVideo = document.querySelector('#own-video') as HTMLVideoElement;
-      const remoteVideo = document.querySelector('#partner-video') as HTMLVideoElement;
-      if (myStream) {
-        myVideo.srcObject = myStream;
-        myVideo.autoplay = true;
-      }
-      if (remoteStream) {
-        remoteVideo.srcObject = remoteStream;
-        remoteVideo.autoplay = true;
-      }
-    });
 
     this.rtcService.onNewPeer$.subscribe(user => {
       if (this.users.find(u => u.peerId === user.peerId) === undefined) {

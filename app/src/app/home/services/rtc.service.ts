@@ -4,7 +4,7 @@ import { UserService, User } from './user.service';
 import Peer, { DataConnection, MediaConnection } from 'peerjs';
 import { v4 as uuidv4 } from 'uuid';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { StatusService } from './status.service';
+import { VideoController } from './video.controller';
 
 type CallRequest = {
   peerId: string,
@@ -21,14 +21,13 @@ export class RtcService {
   private connections: Map<string, Peer.DataConnection> = new Map<string, Peer.DataConnection>();
 
   public activeConnections$: BehaviorSubject<string[]> = new BehaviorSubject([]);
-  public activeStreams$: BehaviorSubject<[MediaStream, MediaStream]> = new BehaviorSubject([null, null]);
 
   public onCallRequest$: Subject<CallRequest> = new Subject<CallRequest>();
   public onNewPeer$: Subject<User> = new Subject<User>();
 
   constructor(
     private userService: UserService,
-    private statusService: StatusService
+    private videoController: VideoController
   ) { }
 
   public async register(peerId?: string): Promise<string> {
@@ -45,11 +44,11 @@ export class RtcService {
 
   public async requestCall(user: User): Promise<void> {
     try {
-      const myStream = this.statusService.videoStream;
+      const myStream = this.videoController.myStream;
       const call = this.peer.call(user.peerId, myStream);
       this.activeCall = call;
       call.on('stream', (remoteStream) => {
-        this.activeStreams$.next([myStream, remoteStream]);
+        this.videoController.setRemoteStream(remoteStream);
       });
       call.on('close', () => {
         this.disconnectCall();
@@ -65,13 +64,7 @@ export class RtcService {
     }
     const peer = this.activeCall.peer;
     this.activeCall.close();
-    const streams = this.activeStreams$.value;
-    if (streams) {
-      const [ myStream, remoteStream ] = streams;
-      // myStream?.getTracks().forEach(t => t.stop()); // don't destroy the stream because it is reused from the StatusService
-      remoteStream?.getTracks().forEach(t => t.stop());
-      this.activeStreams$.next([null, null]);
-    }
+    this.videoController.setRemoteStream(null);
     this.activeCall = null;
     this.sendData(peer, 'hangup', {});
   }
@@ -132,11 +125,11 @@ export class RtcService {
       const request: CallRequest = {
         peerId: call.peer,
         accept: async () => {
-          const myStream = this.statusService.videoStream;
+          const myStream = this.videoController.myStream;
           this.activeCall = call;
           call.answer(myStream);
           call.on('stream', (remoteStream) => {
-            this.activeStreams$.next([myStream, remoteStream]);
+            this.videoController.setRemoteStream(remoteStream);
           });
           call.on('close', () => {
             this.disconnectCall();

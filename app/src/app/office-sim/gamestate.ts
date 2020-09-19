@@ -136,7 +136,7 @@ export class GameState {
 
     // expect tile x, y and a TILE_STATE
     setTileState(x, y, state) {
-        console.log(x + ' - ' + y + ' - ' + state);
+        // console.log(x + ' - ' + y + ' - ' + state);
         if (this.grid[x][y] > state) {
             return;
         }
