@@ -45,13 +45,12 @@ export class RtcService {
     try {
       const myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
       const call = this.peer.call(user.peerId, myStream);
+      this.activeCall = call;
       call.on('stream', (remoteStream) => {
         this.activeStreams$.next([myStream, remoteStream]);
       });
       call.on('close', () => {
-        this.activeCall = call;
-        this.activeStreams$.next([null, null]);
-        myStream.getTracks().forEach(track => track.stop());
+        this.disconnectCall();
       });
     } catch (err) {
       console.error('Failed to get local stream', err);
@@ -62,15 +61,17 @@ export class RtcService {
     if (!this.activeCall) {
       return;
     }
+    const peer = this.activeCall.peer;
     this.activeCall.close();
     const streams = this.activeStreams$.value;
     if (streams) {
       const [ myStream, remoteStream ] = streams;
-      myStream.getTracks().forEach(t => t.stop());
-      remoteStream.getTracks().forEach(t => t.stop());
+      myStream?.getTracks().forEach(t => t.stop());
+      remoteStream?.getTracks().forEach(t => t.stop());
       this.activeStreams$.next([null, null]);
     }
     this.activeCall = null;
+    this.sendData(peer, 'hangup', {});
   }
 
   public deregister() {
@@ -130,14 +131,13 @@ export class RtcService {
         peerId: call.peer,
         accept: async () => {
           const myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-          call.answer(myStream);
           this.activeCall = call;
+          call.answer(myStream);
           call.on('stream', (remoteStream) => {
             this.activeStreams$.next([myStream, remoteStream]);
           });
           call.on('close', () => {
-            this.activeStreams$.next([null, null]);
-            myStream.getTracks().forEach(track => track.stop());
+            this.disconnectCall();
           });
         },
         deny: () => {
@@ -176,6 +176,8 @@ export class RtcService {
     const actionVerb = data.action;
     const value = data.data;
 
+    alert(actionVerb + ' - ' + value);
+
     switch (actionVerb) {
       case 'identity':
         const newUser: User = {
@@ -184,6 +186,9 @@ export class RtcService {
           roomId: this.userService.getUser().roomId
         };
         this.onNewPeer$.next(newUser);
+        break;
+      case 'hangup':
+        this.disconnectCall();
         break;
       default:
         console.log('data received: ' + data);
