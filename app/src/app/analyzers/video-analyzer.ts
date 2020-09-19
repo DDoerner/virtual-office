@@ -301,22 +301,22 @@ export class VideoAnalyzer {
 
   private getUserStatusToString(userStatus: UserStatus) {
     if (userStatus === UserStatus.UNKNOWN) {
-      return 'Arbeitet';
+      return 'Unknown';
     }
     if (userStatus === UserStatus.WORKING) {
-      return 'Arbeitet';
+      return 'Working';
     }
     if (userStatus === UserStatus.AWAY) {
-      return 'Nicht am Platz';
+      return 'Not Present';
     }
     if (userStatus === UserStatus.EATING) {
-      return 'Isst';
+      return 'eating';
     }
     if (userStatus === UserStatus.PHONE) {
-      return 'Telefoniert';
+      return 'In Call';
     }
     if (userStatus === UserStatus.TALK) {
-      return 'Redet';
+      return 'Talking';
     }
     if (userStatus === UserStatus.OFFLINE) {
       return 'Offline';
