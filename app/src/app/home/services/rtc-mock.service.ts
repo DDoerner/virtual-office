@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from './user.service';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { VideoController } from './video.controller';
 
 type CallRequest = {
   peerId: string,
@@ -15,12 +16,13 @@ export class RtcService {
   private connections: string[] = [];
 
   public activeConnections$: BehaviorSubject<string[]> = new BehaviorSubject([]);
-  public activeStreams$: BehaviorSubject<[MediaStream, MediaStream]> = new BehaviorSubject([null, null]);
 
   public onCallRequest$: Subject<CallRequest> = new Subject<CallRequest>();
   public onNewPeer$: Subject<User> = new Subject<User>();
 
-  constructor() { }
+  constructor(
+    private videoController: VideoController
+  ) { }
 
   public async register(peerId?: string): Promise<string> {
     this.hasServerConnection = true;
@@ -33,15 +35,13 @@ export class RtcService {
 
   public async requestCall(user: User): Promise<void> {
     try {
-      const myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-      this.activeStreams$.next([myStream, myStream]);
+      const myStream = this.videoController.myStream$;
     } catch (err) {
       console.error('Failed to get local stream', err);
     }
   }
 
   public async disconnectCall(): Promise<void> {
-    this.activeStreams$.next([null, null]);
   }
 
   public deregister() {

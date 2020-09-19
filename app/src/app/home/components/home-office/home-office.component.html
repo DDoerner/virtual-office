@@ -16,19 +16,4 @@
 
 <app-simulation></app-simulation>
 
-<div class="video-layer">
-  <div class="video-wrapper" [style.visibility]="remoteStream ? 'visible' : 'hidden'">
-    <video id="partner-video"></video>
-    <ion-button (click)="onVideoCloseClicked()" fill="clear" *ngIf="remoteStream">
-      <ion-icon slot="icon-only" name="close-outline" color="light"></ion-icon>
-    </ion-button>
-  </div>
-  <div class="small-window" [style.visibility]="myStream ? 'visible' : 'hidden'">
-    <div class="video-wrapper">
-      <video id="own-video"></video>
-      <ion-button (click)="onVideoCloseClicked()" fill="clear" *ngIf="myStream">
-        <ion-icon slot="icon-only" name="close-outline" color="light"></ion-icon>
-      </ion-button>
-    </div>
-  </div>
-</div>
+<app-video-layer></app-video-layer>

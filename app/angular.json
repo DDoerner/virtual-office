@@ -78,7 +78,9 @@
                   "replace": "src/app/home/services/rtc.service.ts",
                   "with": "src/app/home/services/rtc-mock.service.ts"
                 }
-              ]
+              ],
+              "optimization": false,
+              "buildOptimizer": false
             },
             "ci": {
               "progress": false

@@ -161,13 +161,10 @@ export class GameState {
 
     // expect tile x, y and a TILE_STATE
     setTileState(x, y, state, override = false) {
-        console.log(override)
         console.log(x + ' - ' + y + ' - ' + state);
         if (this.grid[x][y] > state && !override) {
-            return;
+            this.grid[x][y] = state;
         }
-
-        this.grid[x][y] = state;
     }
 
     movePlayer(direction) {
