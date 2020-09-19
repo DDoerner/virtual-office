@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { RtcService } from '../../services/rtc.service';
@@ -108,7 +108,7 @@ export class HomeOfficeComponent implements OnInit {
       if (this.users.find(u => u.peerId === user.peerId) === undefined) {
         this.users.push(user);
       }
-    })
+    });
 
     this.rtcService.onCallRequest$.subscribe(async callRequest => {
       const user = this.users.find(u => u.peerId === callRequest.peerId);

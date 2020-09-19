@@ -8,10 +8,10 @@ import { HomeStartComponent } from './components/home-start/home-start.component
 import { HomeJoinComponent } from './components/home-join/home-join.component';
 import { HomeOfficeComponent } from './components/home-office/home-office.component';
 import { HomeCreateComponent } from './components/home-create/home-create.component';
-import { HomeCallComponent } from './components/home-call/home-call.component';
 
 import { RtcService } from './services/rtc.service';
 import { UserService } from './services/user.service';
+import { SimulationComponent } from '../office-sim/simulation/simulation.component';
 
 
 @NgModule({
@@ -26,7 +26,7 @@ import { UserService } from './services/user.service';
     HomeJoinComponent,
     HomeOfficeComponent,
     HomeCreateComponent,
-    HomeCallComponent
+    SimulationComponent
   ],
   providers: [
     RtcService,

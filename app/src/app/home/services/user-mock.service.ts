@@ -52,7 +52,7 @@ export class UserService {
       },
       {
         username: 'Theo',
-        peerId: 'theo-3',
+        peerId: null,
         roomId: ROOM_ID
       },
       {

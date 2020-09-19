@@ -39,7 +39,9 @@
                 "input": "src/global.scss"
               }
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/phaser/dist/phaser.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -71,6 +73,10 @@
                 {
                   "replace": "src/app/home/services/user.service.ts",
                   "with": "src/app/home/services/user-mock.service.ts"
+                },
+                {
+                  "replace": "src/app/home/services/rtc.service.ts",
+                  "with": "src/app/home/services/rtc-mock.service.ts"
                 }
               ]
             },
@@ -87,6 +93,9 @@
           "configurations": {
             "production": {
               "browserTarget": "app:build:production"
+            },
+            "mock": {
+              "browserTarget": "app:build:mock"
             },
             "ci": {
               "progress": false

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeCallComponent } from './components/home-call/home-call.component';
 import { HomeCreateComponent } from './components/home-create/home-create.component';
 import { HomeJoinComponent } from './components/home-join/home-join.component';
 import { HomeOfficeComponent } from './components/home-office/home-office.component';
@@ -26,10 +25,6 @@ const routes: Routes = [
   {
     path: 'office',
     component: HomeOfficeComponent
-  },
-  {
-    path: 'call',
-    component: HomeCallComponent
   }
 ];
 
