@@ -182,6 +182,8 @@ function drawKitchen(game, grid_x, grid_y, grid_width, grid_height) {
     drawCommunityRoom(game, grid_x, grid_y, grid_width, grid_height)
     drawObject(game, grid_x, grid_y, "COUNTERTOP_UPPER", half_tile_offset = true);
     drawObject(game, grid_x, grid_y + 1, "COUNTERTOP_LOWER", half_tile_offset = true);
+    drawObject(game, grid_x, grid_y - 2, "COUNTERTOP_HIGH", half_tile_offset = true);
+    drawObject(game, grid_x + 1, grid_y - 2, "COUNTERTOP_HIGH", half_tile_offset = true, false, false);
 }
 
 function drawCommunityRoom(game, grid_x, grid_y, grid_width, grid_height) {

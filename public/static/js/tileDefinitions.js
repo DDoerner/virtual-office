@@ -98,6 +98,11 @@ var TILE_DEFINITION = {
     COUNTERTOP_LOWER: {
         x_offset: 0,
         y_offset: 0,
-        spriteDefinition: [[176]]
+        spriteDefinition: [[176, 177, 178]]
+    },
+    COUNTERTOP_HIGH: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[161, 162],[177, 178]]
     }
 }
