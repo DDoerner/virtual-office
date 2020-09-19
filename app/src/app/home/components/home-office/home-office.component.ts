@@ -88,8 +88,8 @@ export class HomeOfficeComponent implements OnInit {
       const [myStream, remoteStream] = streams;
       this.myStream = myStream;
       this.remoteStream = remoteStream;
-      const myVideo = document.querySelector('own-video') as HTMLVideoElement;
-      const remoteVideo = document.querySelector('partner-video') as HTMLVideoElement;
+      const myVideo = document.querySelector('#own-video') as HTMLVideoElement;
+      const remoteVideo = document.querySelector('#partner-video') as HTMLVideoElement;
       if (myStream) { myVideo.srcObject = myStream; }
       if (remoteStream) { remoteVideo.srcObject = remoteStream; }
     });
