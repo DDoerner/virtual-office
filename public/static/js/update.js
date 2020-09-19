@@ -50,13 +50,15 @@ function moveRight() {
 
 
 function onPlayerJoined(id) {
-    // TOOD gameonjects
-
     var player = new Player(id, undefined, new Position(10, 10), ACTIVITY.IDLE, false);
     gameState.addPlayer(player);
     var index = gameState.getAvailableRoom();
-    var gameObjects = drawRoom(gameState.game, 2 + (index * (room_width + 2)), 5, 5, 5);
-    gameState.addRoom(new Room(gameObjects, player));
+    var grid_x =  2 + (index * (room_width + 2));
+    var grid_y = 5;
+    var grid_width = 5;
+    var grid_height = 5;
+    var gameObjects = drawRoom(gameState.game, grid_x, grid_y, grid_width, grid_height, id);
+    gameState.addRoom(new Room(gameObjects, player, grid_x, grid_y, grid_width, grid_height));
 }
 
 function onPlayerStateChanged(id, states) {

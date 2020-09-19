@@ -70,21 +70,31 @@ function drawTileArea(game, grid_x, grid_y, grid_width, grid_height) {
     return gameObjects.flat(1)
 }
 
-function drawHorizontalWall(game, grid_x, grid_y, grid_width, endWallLeft = false, endWallRight=false) {
+function drawHorizontalWall(game, grid_x, grid_y, grid_width, endWallLeft = false, endWallRight=false, lowered=false) {
     var gameObjects = []
     for (var i = 0; i < grid_width; i++) {
         if (i === 0 && endWallLeft) {
             gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_HIGH_LEFT', undefined, true, true));
         } else if (i === grid_width - 1 && endWallRight) {
             gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_HIGH_RIGHT', undefined, true, true));
-        } else {
+        } else if (!lowered) {
             gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_HIGH_CENTER', undefined, true, true));
+        } else {
+            if (i === grid_width - 2) {
+                gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_LOWER_RIGHT', undefined, true, true));
+            } else if (i === 1) {
+                gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_LOWER_LEFT', undefined, true, true));
+            } else if (i === 0 || i ===  grid_width - 1){
+                gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_HIGH_CENTER', undefined, true, true));
+            } else {
+                gameObjects.push(drawObject(game, grid_x + i, grid_y, 'WALL_LOWER', undefined, true, true));
+            }
         }
     }
     return gameObjects.flat();
 }
 
-function drawRoom(game, grid_x, grid_y, grid_width, grid_height) {
+function drawRoom(game, grid_x, grid_y, grid_width, grid_height, title="") {
     var gameObjects = []
 
     if (grid_width <= 0 || grid_height <= 0) {
@@ -98,10 +108,9 @@ function drawRoom(game, grid_x, grid_y, grid_width, grid_height) {
     
 
     // draw walls
-    gameObjects.push(drawHorizontalWall(game, grid_x, grid_y, grid_width, false, true, true));
+    gameObjects.push(drawHorizontalWall(game, grid_x, grid_y, grid_width, false, false, true));
 
     
-
     var tables = ["TABLE"]
     var shelf = ["SIDEBOARD_SMALL", "BOOKSHELF", "CLOSET", "SIDEBOARD"]
 
@@ -133,7 +142,6 @@ function drawRoom(game, grid_x, grid_y, grid_width, grid_height) {
             gameObjects.push(drawObject(game, grid_x + 3, grid_y, shelf[shelfIndex1], true, true, true));
             gameObjects.push(drawObject(game, grid_x + 4, grid_y, shelf[shelfIndex2], true, true, true));
         }
-       
     }
     
 
@@ -163,10 +171,43 @@ function drawRoom(game, grid_x, grid_y, grid_width, grid_height) {
         gameObjects.push(drawHorizontalWall(game, grid_x - 1, grid_y + 5, 3, false, true));
         gameObjects.push(drawHorizontalWall(game, grid_x + grid_width - 1, grid_y + 5, 2, true, false));
     }
-    
-   
+
+    gameObjects.push(game.add.text((grid_x + ((door === 0) ? 4 : 4)) * TILE_WIDTH - ((door === 0) ? 32 : 0), (grid_y + grid_height - 2) * TILE_HEIGHT, " " + title + " ", { fontFamily: 'Verdana, "Goudy Bookletter 1911", Times, serif', backgroundColor: "white", fontSize: 10, color: "black", }));
+
 
     return gameObjects.flat();
+}
+
+function drawKitchen(game, grid_x, grid_y, grid_width, grid_height) {
+    drawCommunityRoom(game, grid_x, grid_y, grid_width, grid_height)
+    drawObject(game, grid_x, grid_y, "COUNTERTOP_UPPER", half_tile_offset = true);
+    drawObject(game, grid_x, grid_y + 1, "COUNTERTOP_LOWER", half_tile_offset = true);
+}
+
+function drawCommunityRoom(game, grid_x, grid_y, grid_width, grid_height) {
+    drawHorizontalWall(game, grid_x, grid_y, 4, false, true)
+    drawHorizontalWall(game, grid_x + grid_width - 4, grid_y, grid_width - 6, true, false)
+
+    drawTileArea(game, grid_x, grid_y, grid_width, grid_height);
+    for (var j = 0; j < grid_height + 1; j++) {
+        for (var i = 0; i < grid_width; i++) {
+            if (i === 0 && j !== 0) {
+                drawObject(game, grid_x + i - 1, grid_y + j, 'WALL_LEFT');
+            }
+
+            if (i === grid_width - 1 && j !== 0) {
+                drawObject(game, grid_x + i + 1, grid_y + j, 'WALL_RIGHT');
+            }
+
+            if (i === 0 && j === 0) {
+                drawObject(game, grid_x - 1, grid_y + j, 'CORNER_UP_RIGHT');
+            } else if (i === grid_width - 1 && j === 0) {
+                drawObject(game, grid_x + i + 1, grid_y + j, 'CORNER_UP_LEFT');
+            }
+        }
+    }
+
+    drawHorizontalWall(game, grid_x - 1, grid_y + grid_height, grid_width + 2, false, false, true)
 }
 
 var rooms = 1;
@@ -176,7 +217,7 @@ var room_height = 5;
 function create() {
     gameState.setGame(this);
 
-    
+    drawHorizontalWall(this, 0, 10, 1, true, false)
 
     for (var i = 0; i < rooms; i++) {
         var room = drawRoom(this, 2 + (i * (room_width + 2)), 5, 5, 5);
@@ -186,9 +227,14 @@ function create() {
     // some meta stuff
     drawTileArea(this, 0, 10, rooms * (room_width +1 ) + 55, 5, false, false);
     drawObject(this, 6, 10, 'SIDEBOARD', true)
+    drawObject(this, 9, 12, 'PLANTS_WIDE', true)
    
 
     character = drawCharacter(this, 5, 10)
+
+    drawKitchen(this, 1, 15, 10, 6)
+    drawCommunityRoom(this, 12, 15, 10, 6)
+
 
 
     // register key press handlers

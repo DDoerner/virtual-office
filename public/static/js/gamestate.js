@@ -14,15 +14,21 @@ class Position {
 }
 
 class Room {
-    constructor(gameObjects, player) {
+    constructor(gameObjects, player, grid_x, grid_y, grid_width, grid_height) {
         this.gameObjects = gameObjects;
         this.owner = player;
+        this.grid_x = grid_x;
+        this.grid_y = grid_y;
+        this.grid_width = grid_width;
+        this.grid_height = grid_height;
     }
 
     destroy() {
         this.gameObjects.forEach((x) => {
             x.destroy();
         });
+
+        gameState.movePlayer(DIRECTION.DOWN)
     }
 }
 
@@ -39,7 +45,7 @@ class Player {
 
     setPosition(p) {
         this.position = p;
-        
+
         if (gameState.getGrid()[this.position.x][this.position.y + 3] === TILE_STATE.WALL
             || gameState.getGrid()[this.position.x][this.position.y + 2] === TILE_STATE.WALL
             || gameState.getGrid()[this.position.x][this.position.y + 1] === TILE_STATE.WALL
@@ -104,6 +110,7 @@ class GameState {
             } else if (this.rooms[i].owner !== undefined && this.rooms[i].owner.getId() === id) {
                 console.log("destroying")
                 this.rooms[i].destroy();
+                gameState.freeGrid(this.rooms[i].grid_x - 1, this.rooms[i].grid_y, this.rooms[i].grid_width + 2, this.rooms[i].grid_height)
                 this.rooms[i] = undefined;
             }
             
@@ -153,6 +160,8 @@ class GameState {
         } else {
             console.log("path is blocked")
         }
+
+        player.gameObject.setDepth(1);
     }
 
     getGrid() {
@@ -162,6 +171,14 @@ class GameState {
     setGame(game) {
         this.game = game;
         Object.freeze(this)
+    }
+
+    freeGrid(grid_x, grid_y, grid_width, grid_height) {
+        for (var i = 0; i < grid_width; i++) {
+            for (var j = 0; j < grid_height; j++) {
+                this.grid[grid_x + i][grid_y + j] = TILE_STATE.FREE;
+            }
+        }
     }
 }
 

@@ -65,6 +65,21 @@ var TILE_DEFINITION = {
         y_offset: -4,
         spriteDefinition: [[151]]
     },
+    WALL_LOWER_RIGHT: {
+        x_offset: 0,
+        y_offset: -4,
+        spriteDefinition: [[97],[113],[129],[145]]
+    },
+    WALL_LOWER_LEFT: {
+        x_offset: 0,
+        y_offset: -4,
+        spriteDefinition: [[99],[115],[131],[147]]
+    },
+    WALL_LOWER: {
+        x_offset: 0,
+        y_offset: -4,
+        spriteDefinition: [[98],[114],[130],[146]]
+    },
     CORNER_UP_RIGHT: {
         x_offset: 0,
         y_offset: -4,
@@ -74,5 +89,15 @@ var TILE_DEFINITION = {
         x_offset: 0,
         y_offset: -4,
         spriteDefinition: [[148]]
+    },
+    COUNTERTOP_UPPER: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[160, 161, 162]]
+    },
+    COUNTERTOP_LOWER: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[176]]
     }
 }
