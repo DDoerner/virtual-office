@@ -18,6 +18,7 @@ export class HomeOfficeComponent implements OnInit {
 
   public roomId: string;
   public users: User[] = [];
+  public user: User;
   public peers: string[] = [];
   public username: string;
 
@@ -66,9 +67,8 @@ export class HomeOfficeComponent implements OnInit {
     elem.present();
 
     // load data from server/storage
-    const user = this.userService.getUser();
-    this.roomId = user.roomId;
-    this.username = user.username;
+    this.user = this.userService.getUser();
+    this.roomId = this.user.roomId;
     this.users = await this.userService.getOtherUsers();
 
     // update simulation

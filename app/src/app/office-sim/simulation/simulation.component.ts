@@ -42,10 +42,10 @@ class MainScene extends Phaser.Scene {
 
   constructor() {
     super({ key: 'main' });
+    GameState.instance.setScene(this);
   }
 
   create() {
-    GameState.instance.setScene(this);
     this.creator = new SimCreator();
     this.creator.create(this);
 

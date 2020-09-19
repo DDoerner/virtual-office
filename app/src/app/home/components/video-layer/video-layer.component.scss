@@ -22,14 +22,23 @@
     }
 
     .small-window {
-        width: max(20vw, 150px);
-        height: max(20vw, 150px);
+        width: 240px;
+        height: 240px;
         position: absolute;
         bottom: 16px;
         right: 16px;
+        border-radius: 200px 200px 0 200px;
+        overflow: hidden;
+        box-shadow: 8px 3px 25px 0 rgba(255,255,255,0.3);
+        border: 14px solid var(--ion-color-tertiary);
 
         video {
-            transform: scaleX(-1);
+            margin-left: 50%;
+            transform: translateX(-50%) scaleX(-1);
+            min-height: 100%;
+            max-width: inherit !important;
+            width: auto;
+            right: auto;
         }
     }
 
