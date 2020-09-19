@@ -27,6 +27,8 @@ export class SimController {
      * CALL AS SOON AS THE DATA IS THERE TO INITIALIZE ALL PLAYERS ETC.
      */
     public onInitialStatus(overallStatus, ownId, ownAcitvity = ACTIVITY.WORKING) {
+        ownId = "Tobi"
+        
         overallStatus = {
             players: [{
                 id: "Dominik",

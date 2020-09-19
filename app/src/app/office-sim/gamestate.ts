@@ -55,7 +55,7 @@ export class Player {
             || GameState.instance.getGrid()[this.position.x][this.position.y + 2] === TILE_STATE.WALL
             || GameState.instance.getGrid()[this.position.x][this.position.y + 1] === TILE_STATE.WALL
             || GameState.instance.getGrid()[this.position.x][this.position.y] === TILE_STATE.WALL) {
-            this.gameObject.alpha = 0.2;
+            this.gameObject.alpha = 0.4;
         } else {
             this.gameObject.alpha = 1;
         }
