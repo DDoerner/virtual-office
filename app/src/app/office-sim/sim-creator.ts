@@ -33,7 +33,7 @@ export class SimCreator {
         return [character, textBanner];
     }
 
-    public drawObject(scene: Phaser.Scene, grid_x, grid_y, indentifier, offset_y_half_tile = false, rigid = true, wall = false, override = false) {
+    public drawObject(scene: Phaser.Scene, grid_x, grid_y, indentifier, offset_y_half_tile = false, rigid = true, wall = false, override = false, transparency = false) {
 
         const x = grid_x * TILE_WIDTH;
         const y = grid_y * TILE_HEIGHT;
@@ -42,7 +42,8 @@ export class SimCreator {
         const half_tile_offset = (offset_y_half_tile) ? TILE_HEIGHT / 2 : 0;
 
 
-        const tile_state = (rigid && !wall) ? TILE_STATE.OBJECT : (rigid) ? TILE_STATE.WALL : TILE_STATE.FREE;
+        let tile_state = (rigid && !wall) ? TILE_STATE.OBJECT : (rigid) ? TILE_STATE.WALL : TILE_STATE.FREE;
+        tile_state = transparency ? 1 : tile_state;
 
         const gameObjects = [];
         for (let y_i = 0; y_i < tileDefinition.spriteDefinition.length; y_i++) {
@@ -173,11 +174,13 @@ export class SimCreator {
 
         const door = Math.round(Math.random());
         if (door === 0) {
-            gameObjects.push(this.drawHorizontalWall(scene, grid_x - 1, grid_y + 5, 2, false, true));
-            gameObjects.push(this.drawHorizontalWall(scene, grid_x + grid_width - 2, grid_y + 5, 3, true, false));
+            gameObjects.push(this.drawHorizontalWall(scene, grid_x - 1, grid_y + 5, 2, false, false));
+            gameObjects.push(this.drawDoor(scene, grid_x + 1, grid_y + 5));
+            gameObjects.push(this.drawHorizontalWall(scene, grid_x + grid_width - 2, grid_y + 5, 3, false, false));
         } else {
-            gameObjects.push(this.drawHorizontalWall(scene, grid_x - 1, grid_y + 5, 3, false, true));
-            gameObjects.push(this.drawHorizontalWall(scene, grid_x + grid_width - 1, grid_y + 5, 2, true, false));
+            gameObjects.push(this.drawHorizontalWall(scene, grid_x - 1, grid_y + 5, 3, false, false));
+            gameObjects.push(this.drawDoor(scene, grid_x + 2, grid_y + 5));
+            gameObjects.push(this.drawHorizontalWall(scene, grid_x + grid_width - 1, grid_y + 5, 2, false, false));
         }
 
         gameObjects.push(scene.add.text(
@@ -187,6 +190,12 @@ export class SimCreator {
             { fontFamily: 'Verdana, "Goudy Bookletter 1911", Times, serif', backgroundColor: 'white', fontSize: 10, color: 'black', }
         ));
 
+        return (gameObjects as any).flat();
+    }
+
+    public drawDoor(scene: Phaser.Scene, grid_x, grid_y) {
+        const gameObjects = [];
+        gameObjects.push(this.drawObject(scene, grid_x, grid_y, "DOOR_OPEN", false, false, false, false, true));
         return (gameObjects as any).flat();
     }
 

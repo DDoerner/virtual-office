@@ -125,4 +125,14 @@ export const TILE_DEFINITION = {
         y_offset: 0,
         spriteDefinition: [[167,168],[183,184]]
     },
+    DOOR_OPEN: {
+        x_offset: 0,
+        y_offset: -4,
+        spriteDefinition: [[172,173],[188,189],[204,205],[220,221]]
+    },
+    DOOR_CLOSED: {
+        x_offset: 0,
+        y_offset: -4,
+        spriteDefinition: [[174,175],[190,191],[206,207],[222,223]]
+    },
 }

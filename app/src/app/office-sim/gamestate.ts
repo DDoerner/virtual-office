@@ -1,4 +1,5 @@
 import { UserStatus } from '../analyzers/user-status';
+import { TILE_DEFINITION } from './tile-definitions';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
@@ -26,8 +27,11 @@ export class Room {
         private grid_x,
         private grid_y,
         private grid_width,
-        private grid_height
+        private grid_height,
+        private doors,
+        private openend = true
     ) {
+
     }
 
     destroy() {
@@ -49,6 +53,47 @@ export class Room {
     getGridY() {
         return this.grid_y;
     }
+
+    setDoorState(opened) {
+        console.log(this.openend)
+        var definitionOpen = TILE_DEFINITION['DOOR_OPEN'].spriteDefinition;
+        var definitionClose = TILE_DEFINITION['DOOR_CLOSED'].spriteDefinition;
+
+        if (!opened) {
+            for (var i = 0; i < definitionOpen.length; i++) {
+                for (var j = 0; j < definitionOpen[0].length; j++) {
+                    var tile = this.doors.filter(x => x.frame.name === definitionClose[i][j])[0];
+
+                    if (tile !== undefined) {
+                        tile.setTexture('spritesheet', definitionOpen[i][j])
+                        if (i > 1) {
+                            tile.tint = 0x00ff00
+                        }
+                    }
+
+                }
+            }
+            this.openend = true;
+        } else {
+            for (var i = 0; i < definitionClose.length; i++) {
+                for (var j = 0; j < definitionClose[0].length; j++) {
+                    var tile = this.doors.filter(x => x.frame.name === definitionOpen[i][j])[0];
+
+
+                    if (tile !== undefined) {
+                        tile.setTexture('spritesheet', definitionClose[i][j])
+                        if (i > 1) {
+                            tile.tint = 0xee0000
+                        }
+                        
+                    }
+                    //this.doors[i * j + j].setTexture('spritesheet', definitionClose[i][j]);
+                }
+            }
+
+            this.openend = false;
+        }
+    }
 }
 
 export class Player {
@@ -68,7 +113,9 @@ export class Player {
         if (GameState.instance.getGrid()[this.position.x][this.position.y + 3] === TILE_STATE.WALL
             || GameState.instance.getGrid()[this.position.x][this.position.y + 2] === TILE_STATE.WALL
             || GameState.instance.getGrid()[this.position.x][this.position.y + 1] === TILE_STATE.WALL
-            || GameState.instance.getGrid()[this.position.x][this.position.y] === TILE_STATE.WALL) {
+            || GameState.instance.getGrid()[this.position.x][this.position.y] === TILE_STATE.WALL
+            || GameState.instance.getGrid()[this.position.x][this.position.y + 2] === TILE_STATE.TRANSPARENCY
+            || GameState.instance.getGrid()[this.position.x][this.position.y + 3] === TILE_STATE.TRANSPARENCY) {
             this.gameObject.alpha = 0.4;
         } else {
             this.gameObject.alpha = 1;
@@ -86,6 +133,10 @@ export class Player {
 
     getId() {
         return this.id;
+    }
+
+    public getIsSelf() {
+        return this.isSelf;
     }
 }
 
@@ -129,6 +180,12 @@ export class GameState {
                 return i;
             }
         }
+    }
+
+    setDND(enabled) {
+        const player = this.players.filter((x) => x.getIsSelf())[0]
+        const room = this.rooms.filter((x) => x.getPlayer().getId() === player.getId())[0];
+        room.setDoorState(enabled)
     }
 
     removeRoomsOfPlayer(id) {
@@ -222,15 +279,15 @@ export class GameState {
         const p_x = player.getPosition().getX() + x_diff;
         const p_y = player.getPosition().getY() + y_diff;
 
-        console.log(p_x);
-        console.log(this.grid[p_x][p_y]);
+
+        console.log("Grid Score: " + this.grid[p_x][p_y]);
         if (p_x  < 0 || p_y < 0) {
             console.log('walking out of bounds');
             return; // out of bounds
         } else if (p_x >= this.grid.length || p_y >= this.grid[0].length) {
             console.log('walking out of bounds');
             return; // out of bounds
-        } else if (this.grid[p_x][p_y] === TILE_STATE.FREE) {
+        } else if (this.grid[p_x][p_y] <= 1) {
             player.setPosition(new Position(player.getPosition().getX() + x_diff, player.getPosition().getY() + y_diff));
         } else {
             console.log('path is blocked');
@@ -275,9 +332,11 @@ export class GameState {
 
 export const TILE_STATE = {
     FREE: 0,
-    OBJECT: 1,
-    CHARACTER: 2,
-    WALL: 3,
+    TRANSPARENCY: 1,
+    OBJECT: 2,
+    CHARACTER: 3,
+    WALL: 4,
+    
 };
 
 export const DIRECTION = {

@@ -1,6 +1,7 @@
 import { UserStatus } from '../analyzers/user-status';
 import { DIRECTION, GameState, Player, Position, Room, ROOM_WIDTH } from './gamestate';
 import { SimCreator } from './sim-creator';
+import { TILE_DEFINITION } from './tile-definitions';
 
 export class SimController {
 
@@ -62,7 +63,11 @@ export class SimController {
         const grid_width = 5;
         const grid_height = 5;
         const gameObjects = new SimCreator().drawRoom(GameState.instance.scene, grid_x, grid_y, grid_width, grid_height, id);
-        GameState.instance.addRoom(new Room(gameObjects, player, grid_x, grid_y, grid_width, grid_height));
+        
+        var openDoor =  (TILE_DEFINITION['DOOR_OPEN'].spriteDefinition as any).flat(1)
+        console.log(gameObjects[0].frame.name)
+        var doorElements = gameObjects.filter((x) => (openDoor.includes(x.frame.name)));
+        GameState.instance.addRoom(new Room(gameObjects, player, grid_x, grid_y, grid_width, grid_height, doorElements));
 
         this.onPlayerStateChanged(id, status); // add yourself first
     }
@@ -77,5 +82,9 @@ export class SimController {
 
     public onPlayerLeft(id) {
         GameState.instance.removeRoomsOfPlayer(id);
+    }
+
+    public setDND(enabled) {
+        GameState.instance.setDND(enabled);
     }
 }
