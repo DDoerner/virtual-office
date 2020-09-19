@@ -10,7 +10,7 @@
       <canvas id="debug-canvas" [style.visibility]="isGridDisplayed ? 'visible' : 'hidden'"></canvas>
       <video id="own-video">
       </video>
-      <ion-button (click)="onVideoCloseClicked()" fill="clear" *ngIf="isMyStreamDisplayed">
+      <ion-button (click)="onVideoCloseClicked()" fill="clear" *ngIf="isRemoteStreamDisplayed">
         <ion-icon slot="icon-only" name="close-outline" color="light"></ion-icon>
       </ion-button>
     </div>

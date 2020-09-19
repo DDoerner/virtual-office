@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from './user.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { VideoController } from './video.controller';
+import { UserStatus } from 'src/app/analyzers/user-status';
 
 type CallRequest = {
   peerId: string,
@@ -16,6 +17,7 @@ export class RtcService {
   private connections: string[] = [];
 
   public activeConnections$: BehaviorSubject<string[]> = new BehaviorSubject([]);
+  public onStatusUpdate$: Subject<[ User, UserStatus ]> = new Subject();
 
   public onCallRequest$: Subject<CallRequest> = new Subject<CallRequest>();
   public onNewPeer$: Subject<User> = new Subject<User>();

@@ -5,6 +5,7 @@ import Peer, { DataConnection, MediaConnection } from 'peerjs';
 import { v4 as uuidv4 } from 'uuid';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { VideoController } from './video.controller';
+import { UserStatus } from 'src/app/analyzers/user-status';
 
 type CallRequest = {
   peerId: string,
@@ -24,6 +25,7 @@ export class RtcService {
 
   public onCallRequest$: Subject<CallRequest> = new Subject<CallRequest>();
   public onNewPeer$: Subject<User> = new Subject<User>();
+  public onStatusUpdate$: Subject<[ User, UserStatus ]> = new Subject();
 
   constructor(
     private userService: UserService,
@@ -77,6 +79,12 @@ export class RtcService {
     this.peer.destroy();
     this.connections.clear();
     this.peer = null;
+  }
+
+  public async broadcastStatus(status: UserStatus): Promise<void> {
+    for (const peerId of this.connections.keys()) {
+      this.sendData(peerId, 'status', status.toString());
+    }
   }
 
   public async connectToPeer(user: User): Promise<void> {
@@ -167,7 +175,7 @@ export class RtcService {
     });
   }
 
-  private handleData(peerId: string, data: any) {
+  private async handleData(peerId: string, data: any) {
     const actionVerb = data.action;
     const value = data.data;
 
@@ -184,6 +192,11 @@ export class RtcService {
         break;
       case 'hangup':
         this.disconnectCall();
+        break;
+      case 'status':
+        const status = UserStatus[value] as any as UserStatus;
+        const user = (await this.userService.getOtherUsers()).find(u => u.peerId === peerId);
+        this.onStatusUpdate$.next([ user, status ]);
         break;
       default:
         console.log('data received: ' + data);
