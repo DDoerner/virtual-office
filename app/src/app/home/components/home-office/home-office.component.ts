@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoadingController, ToastController } from '@ionic/angular';
+import { RtcService } from '../../services/rtc.service';
 import { User, UserService } from '../../services/user.service';
 
 @Component({
@@ -9,19 +11,46 @@ import { User, UserService } from '../../services/user.service';
 })
 export class HomeOfficeComponent implements OnInit {
 
+  @ViewChild('myStream') myVideo: HTMLVideoElement;
+  @ViewChild('remoteStream') remoteVideo: HTMLVideoElement;
+
   public roomId: string;
-  public users: User[];
+  public users: User[] = [];
+  public peers: string[] = [];
+  public username: string;
+
+  public myStream: MediaStream;
+  public remoteStream: MediaStream;
 
   constructor(
     private userService: UserService,
-    private loadingService: LoadingController
+    private loadingService: LoadingController,
+    private rtcService: RtcService,
+    private toastController: ToastController,
+    private router: Router
   ) { }
 
   public ngOnInit() {
+    window['ts'] = this;
     this.initializeAsync();
   }
 
+  public async onUserClicked(user: User) {
+    await this.rtcService.requestCall(user);
+  }
+
+  public onLogoutClicked() {
+    this.userService.logout();
+    this.router.navigate(['/']);
+  }
+
+  public isConnected(user: User) {
+    return this.peers.find(p => user.peerId === p) !== undefined;
+  }
+
   private async initializeAsync() {
+
+    // show loading modal
     const elem = await this.loadingService.create({
       message: 'Wird geladen',
       animated: true,
@@ -30,13 +59,72 @@ export class HomeOfficeComponent implements OnInit {
     });
     elem.present();
 
-    this.roomId = this.userService.getUser().roomId;
+    // load data from server/storage
+    const user = this.userService.getUser();
+    this.roomId = user.roomId;
+    this.username = user.username;
     this.users = await this.userService.getOtherUsers();
 
+    // register for RTC
+    if (!this.rtcService.isRegistered()) {
+      await this.rtcService.register(this.userService.getUser().peerId);
+    }
+
+    // register event handlers
+    this.registerEventHandlers();
+
     this.loadingService.dismiss();
+
+    // connect to all peers
+    const promises: Promise<any>[] = [];
+    for (const usr of this.users) {
+      promises.push(this.rtcService.connectToPeer(usr));
+    }
+    await Promise.all(promises);
   }
 
-  public onLogoutClicked() {
-    this.userService.logout();
+  private registerEventHandlers() {
+
+    this.rtcService.activeConnections$.subscribe(connections => this.peers = connections);
+
+    this.rtcService.activeStreams$.subscribe(streams => {
+      const [myStream, remoteStream] = streams;
+      this.myStream = myStream;
+      this.remoteStream = remoteStream;
+      if (myStream) { this.myVideo.srcObject = myStream; }
+      if (remoteStream) { this.remoteVideo.srcObject = remoteStream; }
+    });
+
+    this.rtcService.onNewPeer$.subscribe(user => {
+      if (this.users.find(u => u.peerId === user.peerId) === undefined) {
+        this.users.push(user);
+      }
+    })
+
+    this.rtcService.onCallRequest$.subscribe(async callRequest => {
+      const user = this.users.find(u => u.peerId === callRequest.peerId);
+      const toast = await this.toastController.create({
+        header: 'Incoming Call',
+        message: user.username + ' wants to talk to you',
+        buttons: [
+          {
+            text: 'Deny',
+            handler: () => {
+              callRequest.deny();
+              toast.dismiss();
+            }
+          },
+          {
+            text: 'Accept',
+            handler: () => {
+              callRequest.accept();
+              toast.dismiss();
+            }
+          }
+        ]
+      });
+      await toast.present();
+    });
   }
+
 }

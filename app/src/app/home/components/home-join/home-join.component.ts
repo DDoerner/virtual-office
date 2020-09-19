@@ -29,7 +29,7 @@ export class HomeJoinComponent implements OnInit {
   }
 
   private async onSubmit(): Promise<void> {
-    const peerId = this.rtcService.register();
+    const peerId = await this.rtcService.register();
     const user: User = {
       peerId,
       username: this.username,

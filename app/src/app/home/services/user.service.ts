@@ -13,19 +13,27 @@ export class UserService {
     return localStorage.getItem(USER_ID_STORAGE_KEY);
   }
   private set userId(value: string) {
-    localStorage.setItem(USER_ID_STORAGE_KEY, value);
+    if (!value) {
+      localStorage.removeItem(USER_ID_STORAGE_KEY);
+    } else {
+      localStorage.setItem(USER_ID_STORAGE_KEY, value);
+    }
   }
 
   private get user(): User {
     return JSON.parse(localStorage.getItem(USER_STORAGE_KEY)) as User;
   }
   private set user(value: User) {
-    this.userId = value?.userId;
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(value));
+    this.userId = value?.userId ?? null;
+    if (!value) {
+      localStorage.removeItem(USER_STORAGE_KEY);
+    } else {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(value));
+    }
   }
 
   public isLoggedIn(): boolean {
-    return this.userId !== null;
+    return this.userId !== null && this.userId !== undefined;
   }
 
   public async register(user: User): Promise<void> {
@@ -47,7 +55,8 @@ export class UserService {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     }).then(res => res.json());
-    return users;
+    const myPeerId = this.getUser().peerId;
+    return users.filter(u => u.peerId !== myPeerId);
   }
 
   public logout() {
