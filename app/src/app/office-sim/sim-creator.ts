@@ -2,15 +2,13 @@ import { ACTIVITY, GameState, Player, Position, ROOM_WIDTH, TILE_HEIGHT, TILE_ST
 import { TILE_DEFINITION } from './tile-definitions';
 
 export class SimCreator {
-
-    public static character = undefined;
     private rooms = 1;
 
-    public drawCharacter(scene: Phaser.Scene, grid_x, grid_y) {
+    public drawCharacter(scene: Phaser.Scene, grid_x, grid_y, id = "") {
         const x = grid_x * TILE_WIDTH;
         const y = grid_y * TILE_HEIGHT + TILE_HEIGHT / 4;
-        SimCreator.character = scene.add.sprite(x, y, 'character1');
-        const textBanner = scene.add.text(x - 29, y - 40, " Test ", { align: "center", backgroundColor: "rgba(0, 0, 0, 0.5)"})
+        const character = scene.add.sprite(x, y, 'character1');
+        const textBanner = scene.add.text(x - 29, y - 40, " " + id + " ", { align: "center", backgroundColor: "rgba(0, 0, 0, 0.5)"})
 
         // scene.anims.create({
         //     key: 'up',
@@ -32,12 +30,10 @@ export class SimCreator {
         //     frames: [9],
         // });
 
-        GameState.instance.addPlayer(new Player('1', SimCreator.character, textBanner, new Position(grid_x, grid_y), ACTIVITY.IDLE, true));
-
-        return SimCreator.character;
+        return [character, textBanner];
     }
 
-    public drawObject(scene: Phaser.Scene, grid_x, grid_y, indentifier, offset_y_half_tile = false, rigid = true, wall = false) {
+    public drawObject(scene: Phaser.Scene, grid_x, grid_y, indentifier, offset_y_half_tile = false, rigid = true, wall = false, override = false) {
 
         const x = grid_x * TILE_WIDTH;
         const y = grid_y * TILE_HEIGHT;
@@ -52,7 +48,7 @@ export class SimCreator {
         for (let y_i = 0; y_i < tileDefinition.spriteDefinition.length; y_i++) {
             for (let x_i = 0; x_i < tileDefinition.spriteDefinition[0].length; x_i++) {
                 if (y_i === 0) {
-                    GameState.instance.setTileState(grid_x + x_i, grid_y - 1, tile_state);
+                    GameState.instance.setTileState(grid_x + x_i, grid_y - 1, tile_state, override);
                 }
 
                 gameObjects.push(scene.add.sprite(
@@ -247,19 +243,18 @@ export class SimCreator {
     }
 
     public create(scene: Phaser.Scene) {
-        this.drawHorizontalWall(scene, 0, 10, 1, true, false);
-
-        for (let i = 0; i < this.rooms; i++) {
-            const room = this.drawRoom(scene, 2 + (i * (ROOM_WIDTH + 2)), 5, 5, 5);
-            GameState.instance.addRoom(room);
+        this.drawTileArea(scene, 0, 10, this.rooms * (ROOM_WIDTH + 1) + 70, 5);
+        
+        for (var i = 0; i < 8; i++) {
+            this.drawObject(scene, 76, 11+i, 'WALL_RIGHT', true);
         }
 
+        
         // some meta stuff
-        this.drawTileArea(scene, 0, 10, this.rooms * (ROOM_WIDTH + 1) + 55, 5);
-        this.drawObject(scene, 6, 10, 'SIDEBOARD', true);
-
-
-        SimCreator.character = this.drawCharacter(scene, 5, 10);
+        
+        this.drawObject(scene, 6, 10, 'SIDEBOARD', true).forEach(element => {
+            element.setDepth(1);
+        });
 
         this.drawKitchen(scene, 1, 15, 10, 6);
         scene.add.text(7 * TILE_WIDTH + 19, 13 * TILE_HEIGHT - 25, " EATING ", { fontFamily: '"Fredoka One", cursive', backgroundColor: "#bad4d5", fontSize: 14, color: "black", })
@@ -267,6 +262,8 @@ export class SimCreator {
         scene.add.text(0 * TILE_WIDTH + 10, 24 * TILE_HEIGHT - 10, " AWAY FROM KEYBOARD ", { fontFamily: '"Fredoka One", cursive', backgroundColor: "#bad4d5", fontSize: 14, color: "black", })
         this.drawMeetingRoom(scene, 12, 15, 12, 10)
         scene.add.text(12 * TILE_WIDTH + 19, 13 * TILE_HEIGHT - 25, " IN CALL ", { fontFamily: '"Fredoka One", cursive', backgroundColor: "#bad4d5", fontSize: 14, color: "black", })
+        this.drawHorizontalWall(scene, 26, 15, 51, false, false);
+
     }
 }
 

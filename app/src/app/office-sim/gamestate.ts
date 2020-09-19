@@ -138,10 +138,32 @@ export class GameState {
         }
     }
 
+    setPlayerState(id, state) {
+        const player = this.players.filter((x) => x.getId() === id)[0];
+        if (player === undefined) {
+            return;
+        }
+
+        
+
+        if (state == ACTIVITY.AFK) {
+            const x = Math.floor(2 + Math.random() * 8);
+            const y = Math.floor(21 + Math.random() * 3);
+            player.setPosition(new Position(x, y))
+            player.gameObject.setTexture('character1', (1 + Math.floor(Math.random() * 3)) * 3)
+        } else if (state == ACTIVITY.EATING) {
+            const x = Math.floor(3 + Math.random() * 7);
+            const y = Math.floor(14 + Math.random() * 2);
+            player.setPosition(new Position(x, y))
+            player.gameObject.setTexture('character1', (1 + Math.floor(Math.random() * 3)) * 3)
+        }
+    }
+
     // expect tile x, y and a TILE_STATE
-    setTileState(x, y, state) {
+    setTileState(x, y, state, override = false) {
+        console.log(override)
         console.log(x + ' - ' + y + ' - ' + state);
-        if (this.grid[x][y] > state) {
+        if (this.grid[x][y] > state && !override) {
             return;
         }
 
@@ -188,8 +210,8 @@ export class GameState {
             console.log('path is blocked');
         }
 
-        player.gameObject.setDepth(1);
-        player.text.setDepth(1);
+        player.gameObject.setDepth(2);
+        player.text.setDepth(2);
     }
 
     getGrid() {
@@ -227,8 +249,9 @@ export class GameState {
 
 export const ACTIVITY = {
     CALLING: 'CALLING',
-    IDLE: 'IDLE',
-    EATING: 'EATING'
+    AFK: 'AFK',
+    EATING: 'EATING',
+    WORKING: 'WORKING'
 };
 
 export const TILE_STATE = {
