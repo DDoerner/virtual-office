@@ -1,3 +1,18 @@
-<p>
-  home-start works!
-</p>
+<ion-img src="assets/virtual-office-icon.png" alt=""></ion-img>
+<ion-text>Welcome to your Virtual Office</ion-text>
+
+<form
+  #enterForm="ngForm"
+  (ngSubmit)="onSubmit(enterForm)"
+>
+  <ion-input
+    placeholder="Enter your Office ID"
+    [(ngModel)]="roomId"
+  ></ion-input>
+  <ion-button type="submit">
+    Continue
+  </ion-button>
+</form>
+
+<ion-text>Or</ion-text>
+<ion-button [routerLink]="['..','create']">Create your own Office</ion-button>

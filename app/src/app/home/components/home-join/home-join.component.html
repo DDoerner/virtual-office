@@ -1,3 +1,14 @@
-<p>
-  home-join works!
-</p>
+<ion-text>You're almost ready</ion-text>
+
+<form
+  #joinForm="ngForm"
+  (ngSubmit)="onSubmit(joinForm)"
+>
+  <ion-input
+    placeholder="Choose your name"
+    [(ngModel)]="username"
+  ></ion-input>
+  <ion-button type="submit">
+    Join
+  </ion-button>
+</form>

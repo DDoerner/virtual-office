@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService, User } from '../../services/auth.service';
+import { RtcService } from '../../services/rtc.service';
 
 @Component({
   selector: 'app-home-join',
@@ -7,8 +10,32 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeJoinComponent implements OnInit {
 
-  constructor() { }
+  public roomId: string;
+  public username: string;
 
-  ngOnInit() {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private rtcService: RtcService,
+    private authService: AuthService
+  ) { }
 
+  ngOnInit() {
+    this.roomId = this.route.snapshot.queryParamMap.get('roomId');
+    if (!this.roomId) {
+      this.router.navigate(['..', 'start'], { relativeTo: this.route });
+    }
+  }
+
+  private async onSubmit(form) {
+    const peerId = this.rtcService.register();
+    const user: User = {
+      peerId,
+      username: this.username,
+      roomId: this.roomId
+    };
+    await this.authService.register(user);
+
+    await this.router.navigate(['..', 'office'], { relativeTo: this.route });
+  }
 }

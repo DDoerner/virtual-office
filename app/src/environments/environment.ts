@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  API_URL: 'https://gentle-sea-0c4ec3d03.azurestaticapps.net/',
+  RTC_URL: 'https://rtc-broker.azurewebsites.net/myapp/'
 };
 
 /*
