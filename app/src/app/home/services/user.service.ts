@@ -32,11 +32,19 @@ export class UserService {
   }
 
   public async register(user: User): Promise<void> {
-    const response: any = await this.httpClient.post(environment.API_URL + 'register-user', user).toPromise();
-    const userId: string = response.userId;
+    const userId = await this.httpClient.post<string>(environment.API_URL + 'register-user', user).toPromise();
 
     user.userId = userId;
     this.user = user;
+  }
+
+  public getUser(): User {
+    return this.user;
+  }
+
+  public async getOtherUsers(): Promise<User[]> {
+    const users = await this.httpClient.get<User[]>(environment.API_URL + 'get-users', { params: { userId: this.userId }}).toPromise();
+    return users;
   }
 
   public logout() {

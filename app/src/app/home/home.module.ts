@@ -11,7 +11,7 @@ import { HomeCreateComponent } from './components/home-create/home-create.compon
 import { HomeCallComponent } from './components/home-call/home-call.component';
 
 import { RtcService } from './services/rtc.service';
-import { AuthService } from './services/auth.service';
+import { UserService } from './services/user.service';
 
 
 @NgModule({
@@ -30,7 +30,7 @@ import { AuthService } from './services/auth.service';
   ],
   providers: [
     RtcService,
-    AuthService
+    UserService
   ]
 })
 export class HomePageModule {}

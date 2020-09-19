@@ -24,18 +24,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const userId = await tableAdapter.createUser(req.body.roomId, req.body.username, req.body.peerId);
     context.log('New user created: ' + userId);
 
-    const users = await tableAdapter.getUsers(req.body.roomId);
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: {
-            users: users.map(u => {
-                return {
-                    peerId: u.peerId,
-                    username: u.username
-                };
-            }),
-            userId
-        }
+        body: userId
     };
 
 };

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-home-start',
@@ -16,7 +16,7 @@ export class HomeStartComponent implements OnInit {
   public roomId: string;
 
   constructor(
-    private authService: AuthService,
+    private userService: UserService,
     private loadingService: LoadingController,
     private router: Router,
     private route: ActivatedRoute
@@ -35,7 +35,7 @@ export class HomeStartComponent implements OnInit {
     });
     elem.present();
 
-    if (this.authService.isLoggedIn()) {
+    if (this.userService.isLoggedIn()) {
       await this.router.navigate(['..', 'office'], { relativeTo: this.route });
     }
 

@@ -1,3 +1,9 @@
-<p>
-  home-office works!
-</p>
+<ion-list>
+  <ion-item-divider>Users in this Office ({{ roomId }})</ion-item-divider>
+  <ion-item *ngFor="let user of users">
+    {{ user.username }}
+  </ion-item>
+  <ion-item-divider>
+    <ion-button (click)="onLogoutClicked()">Logout</ion-button>
+  </ion-item-divider>
+</ion-list>>

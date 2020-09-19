@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService, User } from '../../services/auth.service';
+import { UserService, User } from '../../services/user.service';
 import { RtcService } from '../../services/rtc.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class HomeJoinComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private rtcService: RtcService,
-    private authService: AuthService
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -34,7 +34,7 @@ export class HomeJoinComponent implements OnInit {
       username: this.username,
       roomId: this.roomId
     };
-    await this.authService.register(user);
+    await this.userService.register(user);
 
     await this.router.navigate(['..', 'office'], { relativeTo: this.route });
   }
