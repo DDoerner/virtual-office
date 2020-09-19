@@ -5,6 +5,7 @@ import { BehaviorSubject, timer } from 'rxjs';
 import { debounce, distinct } from 'rxjs/operators';
 import { UserStatus } from './user-status';
 import { VideoController } from '../home/services/video.controller';
+import * as rect from 'rectangles';
 
 export const TRIANGULATION = [
   127, 34, 139, 11, 0, 37, 232, 231, 120, 72, 37, 39, 128, 121, 47, 232, 121,
@@ -191,7 +192,6 @@ export class VideoAnalyzer {
 
   private video: HTMLVideoElement;
   private faceModel: any;
-  private handModel: any;
   private handPoseModel: any;
   private ctx: CanvasRenderingContext2D;
   private videoWidth: number;
@@ -281,6 +281,9 @@ export class VideoAnalyzer {
           ].map(index => keyPoints[index]);
 
           this.drawPath(this.ctx, points, true);
+
+          const faceBox = this.boundingBoxOfPointArray(prediction.scaledMesh);
+          this.drawRectangle(this.ctx, faceBox);
         }
       });
     }
@@ -289,6 +292,9 @@ export class VideoAnalyzer {
       handPosePredictions.forEach(prediction => {
         const result = prediction.landmarks;
         this.drawKeypoints(this.ctx, result);
+
+        const handBox = this.boundingBoxOfPointArray(prediction.landmarks);
+        this.drawRectangle(this.ctx, handBox);
       });
     }
   }
@@ -319,7 +325,7 @@ export class VideoAnalyzer {
   }
 
   private getUserStatus(facePredictions: any, handPosePredictions: any): UserStatus {
-    if (facePredictions.length !== 1) {
+    if (facePredictions.length !== 1 ) {
       return UserStatus.AWAY;
     }
     if (handPosePredictions.length > 0) {
@@ -327,11 +333,65 @@ export class VideoAnalyzer {
       const face = facePredictions[0];
       const faceBox = this.boundingBoxOfPointArray(face.scaledMesh);
       const handBox = this.boundingBoxOfPointArray(hand.landmarks);
+      const faceLowerPart = this.lowerBoxOf(faceBox, 0.333);
+      const faceLeftPart = this.leftBoxOf(faceBox, 0.1);
+      const faceRightPart = this.rightBoxOf(faceBox, 0.1);
+
       this.drawRectangle(this.ctx, faceBox);
       this.drawRectangle(this.ctx, handBox);
-      console.log(hand, face);
+
+      if (this.overlap(faceLowerPart, handBox) > 0.3) {
+        return UserStatus.EATING;
+      }
+      if (this.overlap(faceLeftPart, handBox) > 0.5) {
+        return UserStatus.PHONE;
+      }
+      if (this.overlap(faceRightPart, handBox) > 0.5) {
+        return UserStatus.PHONE;
+      }
+
+      // this.drawRectangle(this.ctx, faceLowerPart);
+      // this.drawRectangle(this.ctx, faceLeftPart);
+      // this.drawRectangle(this.ctx, faceRightPart);
     }
     return UserStatus.WORKING;
+  }
+  overlap(box1: { bottomRight: number[]; topLeft: number[]; },
+          box2: { bottomRight: number[]; topLeft: number[]; }): number {
+
+    const A = rect.normalize({x1: box1.topLeft[0], y1: box1.topLeft[1],
+               x2: box1.bottomRight[0], y2: box1.bottomRight[1]});
+    const B = rect.normalize({x1: box2.topLeft[0], y1: box2.topLeft[1],
+               x2: box2.bottomRight[0], y2: box2.bottomRight[1]});
+    if (rect.intersect(A, B)) {
+      console.log(rect.intersection(A, B));
+      return rect.area(rect.intersection(A, B)) / rect.area(A); // Intersection rectangle
+    }
+    return 0;
+  }
+
+  lowerBoxOf(box: { bottomRight: number[]; topLeft: number[]; }, percentage: number) {
+    const newHeight = (box.bottomRight[1] - box.topLeft[1]) * percentage;
+    return {
+      bottomRight: box.bottomRight,
+      topLeft: [box.topLeft[0], box.bottomRight[0] + newHeight]
+    };
+  }
+
+  leftBoxOf(box: { bottomRight: number[]; topLeft: number[]; }, percentage: number) {
+    const newWidth = (box.bottomRight[0] - box.topLeft[0]) * percentage;
+    return {
+      bottomRight: box.bottomRight,
+      topLeft: [box.bottomRight[0] + newWidth, box.topLeft[1]]
+    };
+  }
+
+  rightBoxOf(box: { bottomRight: number[]; topLeft: number[]; }, percentage: number) {
+    const newWidth = (box.bottomRight[0] - box.topLeft[0]) * percentage;
+    return {
+      bottomRight: [box.topLeft[0] + newWidth, box.bottomRight[1]],
+      topLeft: box.topLeft
+    };
   }
 
   private drawPath(ctx, points, closePath) {
@@ -363,7 +423,6 @@ export class VideoAnalyzer {
     this.ctx.save();
     this.ctx.lineWidth = 2;
     ctx.beginPath();
-    console.log(boundingBox);
     ctx.rect(boundingBox.topLeft[0], boundingBox.topLeft[1],
       boundingBox.bottomRight[0] - boundingBox.topLeft[0],
       boundingBox.bottomRight[1] - boundingBox.topLeft[1]);

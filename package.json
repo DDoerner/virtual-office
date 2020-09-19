@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/DDoerner/virtual-office/issues"
   },
-  "homepage": "https://github.com/DDoerner/virtual-office#readme"
+  "homepage": "https://github.com/DDoerner/virtual-office#readme",
+  "dependencies": {
+    "rectangles": "0.0.4"
+  }
 }
