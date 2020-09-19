@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { UserService, User } from './user.service';
-import Peer, { DataConnection } from 'peerjs';
+import Peer, { DataConnection, MediaConnection } from 'peerjs';
 import { v4 as uuidv4 } from 'uuid';
 import { BehaviorSubject, Subject } from 'rxjs';
 
@@ -16,6 +16,7 @@ export class RtcService {
 
   private hasServerConnection = false;
   private peer: Peer;
+  private activeCall: MediaConnection;
   private connections: Map<string, Peer.DataConnection> = new Map<string, Peer.DataConnection>();
 
   public activeConnections$: BehaviorSubject<string[]> = new BehaviorSubject([]);
@@ -48,6 +49,7 @@ export class RtcService {
         this.activeStreams$.next([myStream, remoteStream]);
       });
       call.on('close', () => {
+        this.activeCall = call;
         this.activeStreams$.next([null, null]);
         myStream.getTracks().forEach(track => track.stop());
       });
@@ -56,7 +58,23 @@ export class RtcService {
     }
   }
 
+  public async disconnectCall(): Promise<void> {
+    if (!this.activeCall) {
+      return;
+    }
+    this.activeCall.close();
+    const streams = this.activeStreams$.value;
+    if (streams) {
+      const [ myStream, remoteStream ] = streams;
+      myStream.getTracks().forEach(t => t.stop());
+      remoteStream.getTracks().forEach(t => t.stop());
+      this.activeStreams$.next([null, null]);
+    }
+    this.activeCall = null;
+  }
+
   public deregister() {
+    this.disconnectCall();
     for (const conn of this.connections.values()) {
       conn.close();
     }
@@ -88,7 +106,8 @@ export class RtcService {
     this.peer = new Peer(peerId, {
       host: environment.RTC_URL,
       port: 443,
-      path: 'myapp'
+      path: 'myapp',
+      secure: true
     });
 
     // resolves once the server confirms the establishment of the connection
@@ -112,6 +131,7 @@ export class RtcService {
         accept: async () => {
           const myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
           call.answer(myStream);
+          this.activeCall = call;
           call.on('stream', (remoteStream) => {
             this.activeStreams$.next([myStream, remoteStream]);
           });

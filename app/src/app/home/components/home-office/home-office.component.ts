@@ -41,6 +41,10 @@ export class HomeOfficeComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  public onVideoCloseClicked() {
+    this.rtcService.disconnectCall();
+  }
+
   public isConnected(user: User) {
     return this.peers.find(p => user.peerId === p) !== undefined;
   }
@@ -90,8 +94,14 @@ export class HomeOfficeComponent implements OnInit {
       this.remoteStream = remoteStream;
       const myVideo = document.querySelector('#own-video') as HTMLVideoElement;
       const remoteVideo = document.querySelector('#partner-video') as HTMLVideoElement;
-      if (myStream) { myVideo.srcObject = myStream; }
-      if (remoteStream) { remoteVideo.srcObject = remoteStream; }
+      if (myStream) {
+        myVideo.srcObject = myStream;
+        myVideo.autoplay = true;
+      }
+      if (remoteStream) {
+        remoteVideo.srcObject = remoteStream;
+        remoteVideo.autoplay = true;
+      }
     });
 
     this.rtcService.onNewPeer$.subscribe(user => {
