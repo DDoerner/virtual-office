@@ -5,7 +5,6 @@ import { BehaviorSubject, timer } from 'rxjs';
 import { debounce, distinct } from 'rxjs/operators';
 import { UserStatus } from './user-status';
 import { VideoController } from '../home/services/video.controller';
-// import * as handTrack from 'handtrackjs';
 
 export const TRIANGULATION = [
   127, 34, 139, 11, 0, 37, 232, 231, 120, 72, 37, 39, 128, 121, 47, 232, 121,
@@ -242,16 +241,18 @@ export class VideoAnalyzer {
     this.ctx.fillStyle = '#32EEDB';
     this.ctx.strokeStyle = '#32EEDB';
     this.ctx.lineWidth = 0.5;
+    this.ctx.font = '32px Verdana';
+    this.ctx.textAlign = 'center';
 
     this.faceModel = await faceMesh.load({maxFaces: 1});
-    // this.handModel = await handTrack.load();
     this.handPoseModel = await handPoseTrack.load();
 
     this.videoController.showDebugData$.next(true);
-    this.renderPrediction(this.ctx);
+    setInterval(() => this.renderPrediction(), ANALYZER_INTERVAL);
   }
 
-  private async renderPrediction(ctx?) {
+  private async renderPrediction() {
+    console.log('prediction');
     const facePredictions = await this.faceModel.estimateFaces(this.video);
     // const handPredictions = await this.handModel.detect(this.video);
     const handPosePredictions = await this.handPoseModel.estimateHands(this.video);
@@ -263,37 +264,58 @@ export class VideoAnalyzer {
     const userStatus = this.getUserStatus(facePredictions, handPosePredictions);
     this.currentStatus$.next(userStatus);
 
-    if (ctx !== undefined) {
-      if (facePredictions.length > 0) {
-        facePredictions.forEach(prediction => {
-          const keyPoints = prediction.scaledMesh;
+    this.ctx.save();
+    this.ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
+    this.ctx.scale(1, 1);
+    this.ctx.fillText(this.getUserStatusToString(userStatus), VIDEO_SIZE / 2.0, 50);
+    this.ctx.restore();
 
-          for (let i = 0; i < TRIANGULATION.length / 3; i++) {
-            const points = [
-              TRIANGULATION[i * 3], TRIANGULATION[i * 3 + 1],
-              TRIANGULATION[i * 3 + 2]
-            ].map(index => keyPoints[index]);
+    if (facePredictions.length > 0) {
+      facePredictions.forEach(prediction => {
+        const keyPoints = prediction.scaledMesh;
 
-            this.drawPath(ctx, points, true);
-          }
-        });
-      }
+        for (let i = 0; i < TRIANGULATION.length / 3; i++) {
+          const points = [
+            TRIANGULATION[i * 3], TRIANGULATION[i * 3 + 1],
+            TRIANGULATION[i * 3 + 2]
+          ].map(index => keyPoints[index]);
 
-      if (handPosePredictions.length > 0) {
-        handPosePredictions.forEach(prediction => {
-          const result = prediction.landmarks;
-          this.drawKeypoints(ctx, result, prediction.annotations);
-        });
-      }
-
-      // if (handPredictions.length > 0) {
-      //   handPredictions.forEach(prediction => {
-      //     console.log(prediction);
-      //   });
-      // }
-
+          this.drawPath(this.ctx, points, true);
+        }
+      });
     }
-    setTimeout(() => this.renderPrediction(ctx), ANALYZER_INTERVAL);
+
+    if (handPosePredictions.length > 0) {
+      handPosePredictions.forEach(prediction => {
+        const result = prediction.landmarks;
+        this.drawKeypoints(this.ctx, result);
+      });
+    }
+  }
+
+  private getUserStatusToString(userStatus: UserStatus) {
+    if (userStatus === UserStatus.UNKNOWN) {
+      return 'Arbeitet';
+    }
+    if (userStatus === UserStatus.WORKING) {
+      return 'Arbeitet';
+    }
+    if (userStatus === UserStatus.AWAY) {
+      return 'Nicht am Platz';
+    }
+    if (userStatus === UserStatus.EATING) {
+      return 'Isst';
+    }
+    if (userStatus === UserStatus.PHONE) {
+      return 'Telefoniert';
+    }
+    if (userStatus === UserStatus.TALK) {
+      return 'Redet';
+    }
+    if (userStatus === UserStatus.OFFLINE) {
+      return 'Offline';
+    }
+    setTimeout(() => this.renderPrediction(), ANALYZER_INTERVAL);
   }
 
   private getUserStatus(facePredictions: any, handPosePredictions: any): UserStatus {
@@ -303,8 +325,11 @@ export class VideoAnalyzer {
     if (handPosePredictions.length > 0) {
       const hand = handPosePredictions[0];
       const face = facePredictions[0];
-      console.log(hand.boundingBox.bottomRight, hand.boundingBox.topLeft,
-        face.boundingBox.bottomRight, face.boundingBox.topLeft);
+      const faceBox = this.boundingBoxOfPointArray(face.scaledMesh);
+      const handBox = this.boundingBoxOfPointArray(hand.landmarks);
+      this.drawRectangle(this.ctx, faceBox);
+      this.drawRectangle(this.ctx, handBox);
+      console.log(hand, face);
     }
     return UserStatus.WORKING;
   }
@@ -322,25 +347,49 @@ export class VideoAnalyzer {
     ctx.stroke(region);
   }
 
+  private boundingBoxOfPointArray(points: any) {
+    const max_x = Math.max(...points.map(point => point[0] - 2));
+    const min_x = Math.min(...points.map(point => point[0] - 2));
+    const max_y = Math.max(...points.map(point => point[1] - 2));
+    const min_y = Math.min(...points.map(point => point[1] - 2));
+    return {
+      bottomRight: [max_x, min_y],
+      topLeft: [min_x, max_y]
+    };
+  }
+
+
+  private drawRectangle(ctx, boundingBox) {
+    this.ctx.save();
+    this.ctx.lineWidth = 2;
+    ctx.beginPath();
+    console.log(boundingBox);
+    ctx.rect(boundingBox.topLeft[0], boundingBox.topLeft[1],
+      boundingBox.bottomRight[0] - boundingBox.topLeft[0],
+      boundingBox.bottomRight[1] - boundingBox.topLeft[1]);
+    ctx.stroke();
+    this.ctx.restore();
+  }
+
   private drawPoint(ctx, y, x, r) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2 * Math.PI);
     ctx.fill();
   }
 
-  private drawKeypoints(ctx, keypoints, annotations) {
+  private drawKeypoints(ctx, keypoints) {
     const keypointsArray = keypoints;
 
     for (const point of keypointsArray) {
       const y = point[0];
       const x = point[1];
-      this.drawPoint(this.ctx, x - 2, y - 2, 3);
+      this.drawPoint(ctx, x - 2, y - 2, 3);
     }
 
     const fingers = Object.keys(FINGER_LOOKUP_INDICES);
     for (const finger of fingers) {
       const points = FINGER_LOOKUP_INDICES[finger].map(idx => keypoints[idx]);
-      this.drawPath(this.ctx, points, false);
+      this.drawPath(ctx, points, false);
     }
   }
 
