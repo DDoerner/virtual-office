@@ -5,7 +5,6 @@ import { HomeCreateComponent } from './components/home-create/home-create.compon
 import { HomeJoinComponent } from './components/home-join/home-join.component';
 import { HomeOfficeComponent } from './components/home-office/home-office.component';
 import { HomeStartComponent } from './components/home-start/home-start.component';
-import { HomePage } from './home.page';
 
 const routes: Routes = [
   {
