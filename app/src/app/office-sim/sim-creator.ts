@@ -204,6 +204,16 @@ export class SimCreator {
     }
 
     public drawMeetingRoom(game, grid_x, grid_y, grid_width, grid_height) {
+        for (let j = 0; j < grid_height + 1; j++) {
+            for (let i = 0; i < grid_width; i++) {
+                if (i === 0 && j !== 0) {
+                    this.drawObject(game, grid_x + i - 1, grid_y + j, 'WALL_RIGHT');
+                }
+            }
+            
+        }
+
+
         this.drawCommunityRoom(game, grid_x, grid_y, grid_width, grid_height)
         this.drawObject(game, grid_x, grid_y + 1, "CHAIR_DOWN", true, false, false);
         this.drawObject(game, grid_x + 6, grid_y + 1, "CHAIR_DOWN", true, false, false);
@@ -214,6 +224,15 @@ export class SimCreator {
         this.drawObject(game, grid_x + 6, grid_y + 4, "CHAIR_UP", false, false, false);
         this.drawObject(game, grid_x + 2, grid_y + 4, "CHAIR_UP", false, false, false);
         this.drawObject(game, grid_x + 4, grid_y + 4, "CHAIR_UP", false, false, false);
+
+        for (let j = 0; j < grid_height + 1; j++) {
+            for (let i = 0; i < grid_width; i++) {
+                if (i === (grid_width - 1)) {
+                    this.drawObject(game, grid_x + i + 1, grid_y + j + 1, 'WALL_LEFT', true);
+                }
+            }
+        }
+        this.drawObject(game, grid_x + grid_width , grid_y + grid_height, "WALL_HIGH_CENTER", false, true, true);
     }
 
     public drawCommunityRoom(scene: Phaser.Scene, grid_x, grid_y, grid_width, grid_height) {

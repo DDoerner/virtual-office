@@ -35,6 +35,18 @@ export class Room {
 
         GameState.instance.movePlayer(DIRECTION.DOWN);
     }
+
+    getPlayer() {
+        return this.player;
+    }
+
+    getGridX() {
+        return this.grid_x;
+    }
+
+    getGridY() {
+        return this.grid_y;
+    }
 }
 
 export class Player {
@@ -144,7 +156,8 @@ export class GameState {
             return;
         }
 
-        
+        player.gameObject.setDepth(1);
+        player.text.setDepth(1);
 
         if (state == ACTIVITY.AFK) {
             const x = Math.floor(2 + Math.random() * 8);
@@ -154,6 +167,19 @@ export class GameState {
         } else if (state == ACTIVITY.EATING) {
             const x = Math.floor(3 + Math.random() * 7);
             const y = Math.floor(14 + Math.random() * 2);
+            player.setPosition(new Position(x, y))
+            player.gameObject.setTexture('character1', (1 + Math.floor(Math.random() * 3)) * 3)
+        } else if (state === ACTIVITY.WORKING) {
+            const room = this.rooms.filter((x) => x.getPlayer().getId() === id)[0];
+            if (player === undefined) {
+                return;
+            }
+
+            player.setPosition(new Position(room.getGridX() + 2, room.getGridY()));
+            player.gameObject.setTexture('character1', 0)
+        }  else if (state === ACTIVITY.CALLING) {
+            const x = Math.floor(20 + Math.random() * 4);
+            const y = Math.floor(15 + Math.random() * 4);
             player.setPosition(new Position(x, y))
             player.gameObject.setTexture('character1', (1 + Math.floor(Math.random() * 3)) * 3)
         }

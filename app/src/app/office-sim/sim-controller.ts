@@ -3,7 +3,7 @@ import { SimCreator } from './sim-creator';
 
 export class SimController {
 
-    public constructor(private simCreator) {
+    public constructor() {
 
     }
 
@@ -28,13 +28,19 @@ export class SimController {
      */
     public onInitialStatus(overallStatus, ownId, ownAcitvity = ACTIVITY.WORKING) {
         ownId = "Tobi"
-        
+
         overallStatus = {
             players: [{
                 id: "Dominik",
                 status: ACTIVITY.EATING
             }, {
                 id: "Rudolf",
+                status: ACTIVITY.AFK
+            }, {
+                id: "Hannah",
+                status: ACTIVITY.CALLING
+            }, {
+                id: "Paul",
                 status: ACTIVITY.AFK
             }]
         }
@@ -55,7 +61,7 @@ export class SimController {
         const grid_y = 5;
         const grid_width = 5;
         const grid_height = 5;
-        const gameObjects = this.simCreator.drawRoom(GameState.instance.scene, grid_x, grid_y, grid_width, grid_height, id);
+        const gameObjects = new SimCreator().drawRoom(GameState.instance.scene, grid_x, grid_y, grid_width, grid_height, id);
         GameState.instance.addRoom(new Room(gameObjects, player, grid_x, grid_y, grid_width, grid_height));
 
         this.onPlayerStateChanged(id, status) // add yourself first
