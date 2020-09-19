@@ -1,13 +1,13 @@
-export const TILE_DEFINITION = {
+export const TILE_DEFINITION =  {
     BOOKSHELF: {
         x_offset: 0,
         y_offset: -1,
-        spriteDefinition: [[4], [20]]
+        spriteDefinition: [[4],[20]]
     },
     SIDEBOARD: {
         x_offset: 0,
         y_offset: -1,
-        spriteDefinition: [[1, 2], [17, 18]]
+        spriteDefinition: [[1,2],[17,18]]
     },
     SIDEBOARD_SMALL: {
         x_offset: 0,
@@ -17,18 +17,18 @@ export const TILE_DEFINITION = {
     CLOSET: {
         x_offset: 0,
         y_offset: -1,
-        spriteDefinition: [[3], [19]]
+        spriteDefinition: [[3],[19]]
     },
     TABLE: {
         x_offset: 0,
         y_offset: 0,
-        spriteDefinition: [[33, 34, 35, 36], [49, 50, 51, 52]]
+        spriteDefinition: [[33,34,35,36],[49,50,51,52]]
     },
     PLANTS_WIDE: {
         x_offset: 0,
         y_offset: 0,
-        spriteDefinition:  [[64, 65, 66]]
-    },
+        spriteDefinition:  [[64,65,66]]
+    }, 
     PLANT: {
         x_offset: 0,
         y_offset: 0,
@@ -39,21 +39,26 @@ export const TILE_DEFINITION = {
         y_offset: 0,
         spriteDefinition: [[138]]
     },
+    TILE_BALCONY: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[208, 209, 210]]
+    },
     WALL_HIGH_CENTER: {
         x_offset: 0,
         y_offset: -4,
-        spriteDefinition: [[110], [126], [142], [158]]
+        spriteDefinition: [[110],[126],[142],[158]]
     },
     WALL_HIGH_LEFT: {
         x_offset: 0,
         y_offset: -4,
-        spriteDefinition: [[109], [125], [141], [157]]
+        spriteDefinition: [[109],[125],[141],[157]]
     },
     WALL_HIGH_RIGHT: {
 
         x_offset: 0,
         y_offset: -4,
-        spriteDefinition: [[111], [127], [143], [159]]
+        spriteDefinition: [[111],[127],[143],[159]]
     },
     WALL_LEFT: {
         x_offset: 0,
@@ -68,17 +73,17 @@ export const TILE_DEFINITION = {
     WALL_LOWER_RIGHT: {
         x_offset: 0,
         y_offset: -4,
-        spriteDefinition: [[97], [113], [129], [145]]
+        spriteDefinition: [[97],[113],[129],[145]]
     },
     WALL_LOWER_LEFT: {
         x_offset: 0,
         y_offset: -4,
-        spriteDefinition: [[99], [115], [131], [147]]
+        spriteDefinition: [[99],[115],[131],[147]]
     },
     WALL_LOWER: {
         x_offset: 0,
         y_offset: -4,
-        spriteDefinition: [[98], [114], [130], [146]]
+        spriteDefinition: [[98],[114],[130],[146]]
     },
     CORNER_UP_RIGHT: {
         x_offset: 0,
@@ -103,6 +108,21 @@ export const TILE_DEFINITION = {
     COUNTERTOP_HIGH: {
         x_offset: 0,
         y_offset: 0,
-        spriteDefinition: [[161, 162], [177, 178]]
-    }
+        spriteDefinition: [[161, 162],[177, 178]]
+    },
+    COUCH_BLACK: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[163, 164,165,166],[179, 180,181,182]]
+    },
+    CHAIR_UP: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[169,170],[185,186]]
+    },
+    CHAIR_DOWN: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[167,168],[183,184]]
+    },
 };
