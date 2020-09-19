@@ -1,4 +1,4 @@
-import { ACTIVITY, GameState, Player, Position, ROOM_WIDTH, TILE_HEIGHT, TILE_STATE, TILE_WIDTH } from './gamestate';
+import { GameState, Player, Position, ROOM_WIDTH, TILE_HEIGHT, TILE_STATE, TILE_WIDTH } from './gamestate';
 import { TILE_DEFINITION } from './tile-definitions';
 
 export class SimCreator {

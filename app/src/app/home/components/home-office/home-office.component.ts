@@ -71,6 +71,15 @@ export class HomeOfficeComponent implements OnInit {
     this.username = user.username;
     this.users = await this.userService.getOtherUsers();
 
+    // update simulation
+    const overallStatus = [];
+    this.users.map(u => overallStatus.push({ id: u.username, status: UserStatus.WORKING }));
+    this.simController.onInitialStatus({
+        players: overallStatus
+      },
+      this.userService.getUser().username
+    );
+
     // register for RTC
     if (!this.rtcService.isRegistered()) {
       await this.rtcService.register(this.userService.getUser().peerId);

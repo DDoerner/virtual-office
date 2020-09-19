@@ -1,4 +1,5 @@
-import { ACTIVITY, DIRECTION, GameState, Player, Position, Room, ROOM_WIDTH } from './gamestate';
+import { UserStatus } from '../analyzers/user-status';
+import { DIRECTION, GameState, Player, Position, Room, ROOM_WIDTH } from './gamestate';
 import { SimCreator } from './sim-creator';
 
 export class SimController {
@@ -26,14 +27,14 @@ export class SimController {
     /***
      * CALL AS SOON AS THE DATA IS THERE TO INITIALIZE ALL PLAYERS ETC.
      */
-    public onInitialStatus(overallStatus, ownId, ownAcitvity = ACTIVITY.WORKING) {
+    public onInitialStatus(overallStatus, ownId, ownAcitvity = UserStatus.WORKING) {
         overallStatus = {
             players: [{
                 id: "Dominik",
-                status: ACTIVITY.EATING
+                status: UserStatus.EATING
             }, {
                 id: "Rudolf",
-                status: ACTIVITY.AFK
+                status: UserStatus.AWAY
             }]
         }
 

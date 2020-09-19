@@ -1,3 +1,5 @@
+import { UserStatus } from '../analyzers/user-status';
+
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
 export const WALL_HIGH_HEIGHT = 4;
@@ -146,12 +148,12 @@ export class GameState {
 
         
 
-        if (state == ACTIVITY.AFK) {
+        if (state == UserStatus.AWAY) {
             const x = Math.floor(2 + Math.random() * 8);
             const y = Math.floor(21 + Math.random() * 3);
             player.setPosition(new Position(x, y))
             player.gameObject.setTexture('character1', (1 + Math.floor(Math.random() * 3)) * 3)
-        } else if (state == ACTIVITY.EATING) {
+        } else if (state == UserStatus.EATING) {
             const x = Math.floor(3 + Math.random() * 7);
             const y = Math.floor(14 + Math.random() * 2);
             player.setPosition(new Position(x, y))
@@ -244,13 +246,6 @@ export class GameState {
     }
 
 }
-
-export const ACTIVITY = {
-    CALLING: 'CALLING',
-    AFK: 'AFK',
-    EATING: 'EATING',
-    WORKING: 'WORKING'
-};
 
 export const TILE_STATE = {
     FREE: 0,
