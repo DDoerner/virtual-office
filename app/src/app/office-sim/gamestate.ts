@@ -41,6 +41,7 @@ export class Player {
     constructor(
         private id: string,
         public gameObject,
+        public text,
         private position,
         private state: string,
         public isSelf = false
@@ -54,12 +55,15 @@ export class Player {
             || GameState.instance.getGrid()[this.position.x][this.position.y + 2] === TILE_STATE.WALL
             || GameState.instance.getGrid()[this.position.x][this.position.y + 1] === TILE_STATE.WALL
             || GameState.instance.getGrid()[this.position.x][this.position.y] === TILE_STATE.WALL) {
-            this.gameObject.alpha = 0.5;
+            this.gameObject.alpha = 0.2;
         } else {
             this.gameObject.alpha = 1;
         }
         this.gameObject.x = p.getX() * TILE_WIDTH;
         this.gameObject.y = p.getY() * TILE_HEIGHT;
+
+        this.text.x = p.getX() * TILE_WIDTH - 29;
+        this.text.y = p.getY() * TILE_HEIGHT - 40;
     }
 
     getPosition() {
@@ -153,13 +157,19 @@ export class GameState {
 
         if (direction === DIRECTION.UP) {
             y_diff = -1;
+            player.gameObject.setTexture('character1', 0)
         } else if (direction === DIRECTION.DOWN) {
             y_diff = 1;
+            player.gameObject.setTexture('character1', 3)
         } else if (direction === DIRECTION.LEFT) {
             x_diff = -1;
+            player.gameObject.setTexture('character1', 6)
         } else if (direction === DIRECTION.RIGHT) {
             x_diff = 1;
+            player.gameObject.setTexture('character1', 9)
         }
+
+       
 
         const p_x = player.getPosition().getX() + x_diff;
         const p_y = player.getPosition().getY() + y_diff;
@@ -179,6 +189,7 @@ export class GameState {
         }
 
         player.gameObject.setDepth(1);
+        player.text.setDepth(1);
     }
 
     getGrid() {
