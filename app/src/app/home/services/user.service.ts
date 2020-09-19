@@ -6,7 +6,7 @@ const USER_ID_STORAGE_KEY = 'virtual-office-user-id';
 const USER_STORAGE_KEY = 'virtual-office-user';
 
 @Injectable()
-export class AuthService {
+export class UserService {
 
   constructor(
     private httpClient: HttpClient

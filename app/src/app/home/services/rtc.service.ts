@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { AuthService } from './auth.service';
+import { UserService } from './user.service';
 import { uuid } from 'uuidv4';
 import * as Peer from 'peerjs';
 
@@ -10,7 +10,7 @@ export class RtcService {
   private peer: Peer;
 
   constructor(
-    private authService: AuthService
+    private userService: UserService
   ) { }
 
   register(): string {
