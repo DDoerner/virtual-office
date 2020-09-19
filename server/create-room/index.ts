@@ -8,7 +8,13 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: roomId
+        body: roomId,
+        headers: {   
+            'Access-Control-Allow-Credentials': 'true',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Request-Headers': 'X-Custom-Header'
+        }
     };
 
 };

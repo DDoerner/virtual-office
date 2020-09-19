@@ -24,3 +24,38 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: max(16px, 5vh) max(16px, 10%);
+    max-width: 700px;
+    min-width: min(100vw, 700px);
+    margin: 0 auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.centered {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+.bordered {
+    border: 1px solid rgba(0,0,0,0.5);
+}
+
+ion-input {
+    border: 1px solid rgba(var(--ion-color-primary-rgb), 0.5);
+    box-shadow: inset 1px 1px 4px -3px var(--ion-color-primary);
+    border-radius: 20px;
+    background-color: rgba(var(--ion-color-primary-rgb), 0.05);
+}

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  API_URL: 'https://gentle-sea-0c4ec3d03.azurestaticapps.net/',
+  API_URL: 'http://localhost:7071/api/',
   RTC_URL: 'https://rtc-broker.azurewebsites.net/myapp/'
 };
 
