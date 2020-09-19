@@ -247,11 +247,10 @@ export class VideoAnalyzer {
     this.handPoseModel = await handPoseTrack.load();
 
     this.videoController.showDebugData$.next(true);
-    setInterval(() => this.renderPrediction(this.ctx), ANALYZER_INTERVAL);
+    this.renderPrediction(this.ctx);
   }
 
   private async renderPrediction(ctx?) {
-    console.log('prediction')
     const facePredictions = await this.faceModel.estimateFaces(this.video);
     // const handPredictions = await this.handModel.detect(this.video);
     const handPosePredictions = await this.handPoseModel.estimateHands(this.video);
@@ -293,6 +292,7 @@ export class VideoAnalyzer {
       // }
 
     }
+    setTimeout(() => this.renderPrediction(ctx), ANALYZER_INTERVAL);
   }
 
   private getUserStatus(facePredictions: any, handPosePredictions: any): UserStatus {

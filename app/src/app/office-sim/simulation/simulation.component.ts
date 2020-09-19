@@ -49,7 +49,7 @@ class MainScene extends Phaser.Scene {
     this.creator = new SimCreator();
     this.creator.create(this);
 
-    const controller = new SimController(this.creator);
+    const controller = new SimController();
     window['controller'] = controller;
 
     this.input.keyboard.on('keydown_W', controller.moveUp, this);

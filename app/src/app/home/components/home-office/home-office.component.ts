@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { filter, take } from 'rxjs/operators';
+import { UserStatus } from 'src/app/analyzers/user-status';
 import { VideoAnalyzer } from 'src/app/analyzers/video-analyzer';
+import { SimController } from 'src/app/office-sim/sim-controller';
 import { RtcService } from '../../services/rtc.service';
 import { User, UserService } from '../../services/user.service';
 import { VideoController } from '../../services/video.controller';
@@ -18,6 +20,8 @@ export class HomeOfficeComponent implements OnInit {
   public users: User[] = [];
   public peers: string[] = [];
   public username: string;
+
+  private simController = new SimController();
 
   constructor(
     private userService: UserService,
@@ -101,7 +105,12 @@ export class HomeOfficeComponent implements OnInit {
     this.rtcService.onNewPeer$.subscribe(user => {
       if (this.users.find(u => u.peerId === user.peerId) === undefined) {
         this.users.push(user);
+        this.simController.onPlayerJoined(user.username, UserStatus.WORKING);
       }
+    });
+
+    this.rtcService.onStatusUpdate$.subscribe(([ user, status ]) => {
+      this.simController.onPlayerStateChanged(user.username, status);
     });
 
     this.rtcService.onCallRequest$.subscribe(async callRequest => {
