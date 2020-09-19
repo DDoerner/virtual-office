@@ -12,6 +12,7 @@ import { HomeCreateComponent } from './components/home-create/home-create.compon
 import { RtcService } from './services/rtc.service';
 import { UserService } from './services/user.service';
 import { SimulationComponent } from '../office-sim/simulation/simulation.component';
+import { StatusService } from './services/status.service';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { SimulationComponent } from '../office-sim/simulation/simulation.compone
   ],
   providers: [
     RtcService,
-    UserService
+    UserService,
+    StatusService
   ]
 })
 export class HomePageModule {}

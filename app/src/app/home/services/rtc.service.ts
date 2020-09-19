@@ -4,6 +4,7 @@ import { UserService, User } from './user.service';
 import Peer, { DataConnection, MediaConnection } from 'peerjs';
 import { v4 as uuidv4 } from 'uuid';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { StatusService } from './status.service';
 
 type CallRequest = {
   peerId: string,
@@ -26,7 +27,8 @@ export class RtcService {
   public onNewPeer$: Subject<User> = new Subject<User>();
 
   constructor(
-    private userService: UserService
+    private userService: UserService,
+    private statusService: StatusService
   ) { }
 
   public async register(peerId?: string): Promise<string> {
@@ -43,7 +45,7 @@ export class RtcService {
 
   public async requestCall(user: User): Promise<void> {
     try {
-      const myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+      const myStream = this.statusService.videoStream;
       const call = this.peer.call(user.peerId, myStream);
       this.activeCall = call;
       call.on('stream', (remoteStream) => {
@@ -66,7 +68,7 @@ export class RtcService {
     const streams = this.activeStreams$.value;
     if (streams) {
       const [ myStream, remoteStream ] = streams;
-      myStream?.getTracks().forEach(t => t.stop());
+      // myStream?.getTracks().forEach(t => t.stop()); // don't destroy the stream because it is reused from the StatusService
       remoteStream?.getTracks().forEach(t => t.stop());
       this.activeStreams$.next([null, null]);
     }
@@ -130,7 +132,7 @@ export class RtcService {
       const request: CallRequest = {
         peerId: call.peer,
         accept: async () => {
-          const myStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+          const myStream = this.statusService.videoStream;
           this.activeCall = call;
           call.answer(myStream);
           call.on('stream', (remoteStream) => {
