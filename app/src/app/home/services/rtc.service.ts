@@ -87,7 +87,7 @@ export class RtcService {
   private async connectToServer(peerId: string): Promise<void> {
     this.peer = new Peer(peerId, {
       host: environment.RTC_URL,
-      port: 80,
+      port: 443,
       path: 'myapp'
     });
 
