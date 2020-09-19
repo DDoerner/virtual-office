@@ -6,7 +6,7 @@ import { BaseEntity, Room, User } from './types';
 export class TableAdapter {
 
     public async createRoom(): Promise<string> {
-        const id = uuid();
+        const id = this.generateCode(4);
         const room: Room = {
             id,
             createdAt: this.getTimestamp()
@@ -74,4 +74,13 @@ export class TableAdapter {
         return new Date().toISOString();
     }
     
+    private generateCode(length: number) {
+        var result: string;
+        var chars: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var charCount = chars.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += chars.charAt(Math.floor(Math.random() * charCount));
+        }
+        return result;
+     }
 }
