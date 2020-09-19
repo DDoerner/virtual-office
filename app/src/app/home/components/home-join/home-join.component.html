@@ -1,0 +1,19 @@
+<div class="content-wrapper">
+  
+  <div class="grow centered flex-col">
+    <ion-text>You're almost ready...</ion-text>
+    <form
+      (ngSubmit)="onSubmit()"
+      class="bordered ion-margin ion-padding"
+    >
+      <ion-input
+        placeholder="Choose your name"
+        name="username"
+        [(ngModel)]="username"
+      ></ion-input>
+      <ion-button type="submit" class="ion-margin">
+        Join
+      </ion-button>
+    </form>
+  </div>
+</div>

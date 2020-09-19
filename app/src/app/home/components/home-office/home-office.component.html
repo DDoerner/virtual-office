@@ -1,0 +1,34 @@
+<div class="flex-col centered float">
+  <ion-list lines="full">
+    <ion-item-divider class="ion-padding" color="medium">
+      Hello, {{ username }}<br />
+      Users in this Office ({{ roomId }})
+    </ion-item-divider>
+    <ion-item *ngFor="let user of users" button="true" detail="true" (click)="onUserClicked(user)">
+      {{ user.username }}
+      <ion-badge slot="end" color="{{ isConnected(user) ? 'success' : 'warning' }}">&nbsp;</ion-badge>
+    </ion-item>
+    <ion-item color="medium" button="true" (click)="onLogoutClicked()">
+      <ion-text class="ion-text-center" style="width: 100%">Logout</ion-text>
+    </ion-item>
+  </ion-list>
+</div>
+
+<app-simulation></app-simulation>
+
+<div class="video-layer">
+  <div class="video-wrapper" [style.visibility]="remoteStream ? 'visible' : 'hidden'">
+    <video id="partner-video"></video>
+    <ion-button (click)="onVideoCloseClicked()" fill="clear" *ngIf="remoteStream">
+      <ion-icon slot="icon-only" name="close-outline" color="light"></ion-icon>
+    </ion-button>
+  </div>
+  <div class="small-window" [style.visibility]="myStream ? 'visible' : 'hidden'">
+    <div class="video-wrapper">
+      <video id="own-video"></video>
+      <ion-button (click)="onVideoCloseClicked()" fill="clear" *ngIf="myStream">
+        <ion-icon slot="icon-only" name="close-outline" color="light"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+</div>
