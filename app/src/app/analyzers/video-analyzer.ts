@@ -226,14 +226,15 @@ export class VideoAnalyzer {
     // this.triangulateMesh = true;
 
     await this.setupCamera(this.video, mobile);
-    this.videoWidth = this.video.videoWidth;
-    this.videoHeight = this.video.videoHeight;
-    this.video.width = this.videoWidth;
-    this.video.height = this.videoHeight;
+    const sideLength = Math.min(this.video.videoWidth, this.video.videoHeight);
+    this.videoWidth = sideLength;
+    this.videoHeight = sideLength;
+    this.video.width = sideLength;
+    this.video.height = sideLength;
 
     const canvas = this.videoController.debugElement;
-    canvas.width = this.videoWidth;
-    canvas.height = this.videoHeight;
+    canvas.width = sideLength;
+    canvas.height = sideLength;
 
     this.ctx = canvas.getContext('2d');
     this.ctx.translate(canvas.width, 0);

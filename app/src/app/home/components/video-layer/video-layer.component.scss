@@ -19,40 +19,40 @@
         width: 100%;
         background-color: black;
         margin: auto;
-
-        video {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            max-width: 100%;
-            max-height: 100%;
-            width: 100%;
-        }
-
-        canvas {
-            top: 0;
-            height: 100%;
-            position: absolute;
-            z-index: 100;
-        }
-
-        ion-button {
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
     }
 
     .small-window {
-        width: max(30vw, 200px);
+        width: max(20vw, 150px);
+        height: max(20vw, 150px);
         position: absolute;
-        bottom: 2em;
-        right: 2em;
+        bottom: 16px;
+        right: 16px;
 
-        .video-wrapper {
-            position: absolute;
-            bottom: 0;
-            right: 0;
+        video {
+            transform: scaleX(-1);
         }
+    }
+
+    video {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        max-width: 100%;
+        max-height: 100%;
+        width: 100%;
+    }
+
+    canvas {
+        top: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        z-index: 100;
+    }
+
+    ion-button {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 }

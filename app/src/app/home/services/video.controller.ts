@@ -30,6 +30,7 @@ export class VideoController {
             remoteStream?.getTracks().forEach(t => t.stop());
         }
         this.remoteStream$.next(remoteStream);
+        this.showRemoteStream$.next(remoteStream !== null && remoteStream !== undefined);
     }
 
 }
