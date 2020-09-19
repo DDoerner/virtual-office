@@ -1,8 +1,8 @@
 import { Component, OnInit  } from '@angular/core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as faceMesh from '@tensorflow-models/facemesh';
-import * as handTrack from '@tensorflow-models/handpose';
-
+import * as handPoseTrack from '@tensorflow-models/handpose';
+// import * as handTrack from 'handtrackjs';
 
 export const TRIANGULATION = [
   127, 34, 139, 11, 0, 37, 232, 231, 120, 72, 37, 39, 128, 121, 47, 232, 121,
@@ -176,6 +176,13 @@ export const TRIANGULATION = [
 
 const VIDEO_SIZE = 500;
 
+enum UserStatus {
+  READY = 'READY',
+  NOT_ON_DESK = 'NOT_ON_DESK',
+  EATING = 'EATING',
+  EXTERNAL_PHONE_CALL = 'EXTERNAL_PHONE_CALL'
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -186,11 +193,13 @@ export class HomePage implements OnInit {
   private video: HTMLVideoElement;
   private faceModel: any;
   private handModel: any;
-  private triangulateMesh: boolean;
+  private handPoseModel: any;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private videoWidth: number;
   private videoHeight: number;
+
+  public userStatus = UserStatus.NOT_ON_DESK;
 
   private fingerLookupIndices = {
     thumb: [0, 1, 2, 3, 4],
@@ -229,48 +238,64 @@ export class HomePage implements OnInit {
     this.ctx.lineWidth = 0.5;
 
     this.faceModel = await faceMesh.load({maxFaces: 1});
-    this.handModel = await handTrack.load();
-    this.renderPrediction();
+    // this.handModel = await handTrack.load();
+    this.handPoseModel = await handPoseTrack.load();
+    this.renderPrediction(this.ctx);
   }
 
-  private async renderPrediction() {
+  private async renderPrediction(ctx?) {
     const facePredictions = await this.faceModel.estimateFaces(this.video);
-    const handPredictions = await this.handModel.estimateHands(this.video);
+    // const handPredictions = await this.handModel.detect(this.video);
+    const handPosePredictions = await this.handPoseModel.estimateHands(this.video);
 
     this.ctx.drawImage(
         this.video, 0, 0, this.videoWidth, this.videoHeight, 0, 0, this.canvas.width, this.canvas.height);
 
-    if (facePredictions.length > 0) {
-      facePredictions.forEach(prediction => {
-        const keyPoints = prediction.scaledMesh;
+    this.userStatus = this.getUserStatus(facePredictions, handPosePredictions);
 
-        if (this.triangulateMesh) {
+    if (ctx !== undefined) {
+      if (facePredictions.length > 0) {
+        facePredictions.forEach(prediction => {
+          const keyPoints = prediction.scaledMesh;
+
           for (let i = 0; i < TRIANGULATION.length / 3; i++) {
             const points = [
               TRIANGULATION[i * 3], TRIANGULATION[i * 3 + 1],
               TRIANGULATION[i * 3 + 2]
             ].map(index => keyPoints[index]);
 
-            this.drawPath(this.ctx, points, true);
+            this.drawPath(ctx, points, true);
           }
-        } else {
-          for (const [x, y] of keyPoints) {
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, 1 /* radius */, 0, 2 * Math.PI);
-            this.ctx.fill();
-          }
-        }
-      });
-    }
+        });
+      }
 
-    if (handPredictions.length > 0) {
-      handPredictions.forEach(prediction => {
-        const result = prediction.landmarks;
-        this.drawKeypoints(result, prediction.annotations);
-      });
-    }
+      if (handPosePredictions.length > 0) {
+        handPosePredictions.forEach(prediction => {
+          const result = prediction.landmarks;
+          this.drawKeypoints(ctx, result, prediction.annotations);
+        });
+      }
 
-    requestAnimationFrame(() => this.renderPrediction());
+      // if (handPredictions.length > 0) {
+      //   handPredictions.forEach(prediction => {
+      //     console.log(prediction);
+      //   });
+      // }
+
+    }
+    requestAnimationFrame(() => this.renderPrediction(ctx));
+  }
+  private getUserStatus(facePredictions: any, handPosePredictions: any): UserStatus {
+    if (facePredictions.length !== 1) {
+      return UserStatus.NOT_ON_DESK;
+    }
+    if (handPosePredictions.length > 0) {
+      const hand = handPosePredictions[0];
+      const face = facePredictions[0];
+      console.log(hand.boundingBox.bottomRight, hand.boundingBox.topLeft,
+        face.boundingBox.bottomRight, face.boundingBox.topLeft);
+    }
+    return UserStatus.READY;
   }
 
   private drawPath(ctx, points, closePath) {
@@ -287,19 +312,19 @@ export class HomePage implements OnInit {
   }
 
 
-  private drawPoint(y, x, r) {
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, r, 0, 2 * Math.PI);
-    this.ctx.fill();
+  private drawPoint(ctx, y, x, r) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fill();
   }
 
-  private drawKeypoints(keypoints, annotations) {
+  private drawKeypoints(ctx, keypoints, annotations) {
     const keypointsArray = keypoints;
 
     for (let i = 0; i < keypointsArray.length; i++) {
       const y = keypointsArray[i][0];
       const x = keypointsArray[i][1];
-      this.drawPoint(x - 2, y - 2, 3);
+      this.drawPoint(this.ctx, x - 2, y - 2, 3);
     }
 
     const fingers = Object.keys(this.fingerLookupIndices);
