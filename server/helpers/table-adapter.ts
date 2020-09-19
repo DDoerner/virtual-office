@@ -24,14 +24,14 @@ export class TableAdapter {
     public async getUser(id: string): Promise<User> {
         const table = azstorage.createTableService(process.env.coronazaehler_STORAGE);
         const user = await new Promise((resolve) => table.retrieveEntity('users', id, id, (err, result, resp) => resolve(result)));
-        return user as User;
+        return this.convertFromTableObject(user) as User;
     }
 
     public async getUsers(roomId: string): Promise<User[]> {
         var table = azstorage.createTableService(process.env.coronazaehler_STORAGE);
         const query = new azurestorage.TableQuery().where('roomId eq ?', roomId);
-        const users = await new Promise((resolve) => table.queryEntities('users', query, null, (err, result, resp) => resolve(result.entries)));
-        return users as User[];
+        const users: any[] = await new Promise((resolve) => table.queryEntities('users', query, null, (err, result, resp) => resolve(result.entries)));
+        return users.map(u => this.convertFromTableObject(u)) as User[];
     }
 
     public async createUser(roomId: string, username: string, peerId: string): Promise<string> {
@@ -66,6 +66,17 @@ export class TableAdapter {
         const task = {};
         for (let prop of Object.keys(obj)) {
             task[prop] = {'_': obj[prop]};
+        }
+        return task;
+    }
+
+    private convertFromTableObject(obj: any): Object {
+        const task = {};
+        for (let prop of Object.keys(obj)) {
+            if (prop.startsWith('.')) {
+                continue;
+            }
+            task[prop] = obj[prop]['_'];
         }
         return task;
     }
