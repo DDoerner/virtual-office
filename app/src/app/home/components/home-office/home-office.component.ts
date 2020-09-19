@@ -94,7 +94,7 @@ export class HomeOfficeComponent implements OnInit {
       take(1)
     ).subscribe(() => {
       // wait until stream has been received before initializing the analyzer
-      new VideoAnalyzer(this.videoController).initialize();
+      // new VideoAnalyzer(this.videoController).initialize();
     });
 
     this.loadingService.dismiss();
