@@ -55,7 +55,8 @@ export class SimController {
 
     public onPlayerJoined(id, status, isSelf = false) {
         const playerGameObjects = new SimCreator().drawCharacter(GameState.instance.scene, 10, 10, id);
-        const player = new Player(id, playerGameObjects[0], playerGameObjects[1], new Position(10, 10), status, isSelf);
+        const player = new Player(id, playerGameObjects[0], playerGameObjects[1], playerGameObjects[2], new Position(10, 10), status, isSelf);
+        GameState.instance.setBubble(player)
         GameState.instance.addPlayer(player);
         const index = GameState.instance.getAvailableRoom();
         const grid_x =  2 + (index * (ROOM_WIDTH + 2));

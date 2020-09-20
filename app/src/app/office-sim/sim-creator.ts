@@ -7,9 +7,11 @@ export class SimCreator {
     public drawCharacter(scene: Phaser.Scene, grid_x, grid_y, id = "") {
         const x = grid_x * TILE_WIDTH;
         const y = grid_y * TILE_HEIGHT + TILE_HEIGHT / 4;
-        const character = scene.add.sprite(x, y, 'character1');
-        const textBanner = scene.add.text(x - 29, y - 40, " " + id + " ", { align: "center", backgroundColor: "rgba(0, 0, 0, 0.5)"})
-
+        const character = scene.add.sprite(x, y, 'character1', 0);
+        const textBanner = scene.add.text(x - 29, y + 40, " " + id + " ", { align: "center", backgroundColor: "rgba(0, 0, 0, 0.5)"})
+        const bubble = scene.add.sprite(x + 30, y - 30, 'sprite_x32', 64)
+        bubble.setDepth(1)
+        textBanner.setDepth(2)
         // scene.anims.create({
         //     key: 'up',
         //     frames: [0],
@@ -30,7 +32,7 @@ export class SimCreator {
         //     frames: [9],
         // });
 
-        return [character, textBanner];
+        return [character, textBanner, bubble];
     }
 
     public drawObject(scene: Phaser.Scene, grid_x, grid_y, indentifier, offset_y_half_tile = false, rigid = true, wall = false, override = false, transparency = false) {
@@ -229,10 +231,15 @@ export class SimCreator {
         this.drawObject(game, grid_x + 2, grid_y + 1, "CHAIR_DOWN", true, false, false);
         this.drawObject(game, grid_x + 4, grid_y + 1, "CHAIR_DOWN", true, false, false);
 
-        this.drawObject(game, grid_x, grid_y + 4, "CHAIR_UP", false, false, false);
-        this.drawObject(game, grid_x + 6, grid_y + 4, "CHAIR_UP", false, false, false);
-        this.drawObject(game, grid_x + 2, grid_y + 4, "CHAIR_UP", false, false, false);
-        this.drawObject(game, grid_x + 4, grid_y + 4, "CHAIR_UP", false, false, false);
+        this.drawObject(game, grid_x, grid_y + 2, "TABLE_LARGE", false, true, false, false, false)
+        this.drawObject(game, grid_x + 4, grid_y + 2, "TABLE_LARGE", false, true, false, false, false)
+        this.drawObject(game, grid_x + 1, grid_y + 2, "PLANT", false, true, false, false, false)
+        
+
+        this.drawObject(game, grid_x, grid_y + 4, "CHAIR_UP", true, false, false);
+        this.drawObject(game, grid_x + 6, grid_y + 4, "CHAIR_UP", true, false, false);
+        this.drawObject(game, grid_x + 2, grid_y + 4, "CHAIR_UP", true, false, false);
+        this.drawObject(game, grid_x + 4, grid_y + 4, "CHAIR_UP", true, false, false);
 
         for (let j = 0; j < grid_height + 1; j++) {
             for (let i = 0; i < grid_width; i++) {

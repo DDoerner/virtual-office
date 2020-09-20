@@ -42,7 +42,7 @@ export const TILE_DEFINITION = {
     TILE_BALCONY: {
         x_offset: 0,
         y_offset: 0,
-        spriteDefinition: [[208, 209, 210]]
+        spriteDefinition: [[208]]
     },
     WALL_HIGH_CENTER: {
         x_offset: 0,
@@ -135,4 +135,9 @@ export const TILE_DEFINITION = {
         y_offset: -4,
         spriteDefinition: [[174,175],[190,191],[206,207],[222,223]]
     },
+    TABLE_LARGE: {
+        x_offset: 0,
+        y_offset: 0,
+        spriteDefinition: [[195,196,197,198],[211,212,213,214],[227,228,229,230]]
+    }
 }

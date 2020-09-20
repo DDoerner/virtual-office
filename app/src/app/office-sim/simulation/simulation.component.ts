@@ -40,6 +40,9 @@ class MainScene extends Phaser.Scene {
 
   private creator: SimCreator;
 
+  private passedTime: Date = new Date();
+  private diff: integer = 20000;
+
   constructor() {
     super({ key: 'main' });
     GameState.instance.setScene(this);
@@ -64,10 +67,15 @@ class MainScene extends Phaser.Scene {
 
   preload() {
     this.load.spritesheet('spritesheet', './assets/texturemap.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('sprite_x32', './assets/texturemap.png', { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet('character1', './assets/character1.png', { frameWidth: 311 / 12, frameHeight: 42 });
   }
-
+  
   update() {
-
+    if (new Date().getTime() - this.passedTime.getTime() > this.diff) {
+      GameState.instance.updatePlayers();
+      this.diff = Math.floor(1000 + Math.random() * 1500)
+      this.passedTime = new Date();
+    }
   }
 }
