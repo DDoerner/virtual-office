@@ -89,7 +89,7 @@ export class RtcService {
 
   public async broadcastStatus(status: UserStatus): Promise<void> {
     for (const peerId of this.connections.keys()) {
-      this.sendData(peerId, 'status', status.toString());
+      this.sendData(peerId, 'status', UserStatus[status]);
     }
   }
 
