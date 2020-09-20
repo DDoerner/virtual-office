@@ -252,23 +252,12 @@ export class VideoAnalyzer {
   }
 
   private async renderPrediction() {
-    console.log('prediction');
     const facePredictions = await this.faceModel.estimateFaces(this.video);
-    // const handPredictions = await this.handModel.detect(this.video);
     const handPosePredictions = await this.handPoseModel.estimateHands(this.video);
 
     this.ctx.drawImage(
       this.video, 0, 0, this.videoWidth, this.videoHeight, 0, 0, this.videoWidth, this.videoHeight
     );
-
-    const userStatus = this.getUserStatus(facePredictions, handPosePredictions);
-    this.currentStatus$.next(userStatus);
-
-    this.ctx.save();
-    this.ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
-    this.ctx.scale(1, 1);
-    this.ctx.fillText(this.getUserStatusToString(userStatus), VIDEO_SIZE / 2.0, 50);
-    this.ctx.restore();
 
     if (facePredictions.length > 0) {
       facePredictions.forEach(prediction => {
@@ -297,6 +286,15 @@ export class VideoAnalyzer {
         this.drawRectangle(this.ctx, handBox);
       });
     }
+
+    const userStatus = this.getUserStatus(facePredictions, handPosePredictions);
+    this.currentStatus$.next(userStatus);
+
+    this.ctx.save();
+    this.ctx.setTransform(1, 0, 0, 1, 0.5, 0.5);
+    this.ctx.scale(1, 1);
+    this.ctx.fillText(this.getUserStatusToString(userStatus), VIDEO_SIZE / 2.0, 50);
+    this.ctx.restore();
   }
 
   private getUserStatusToString(userStatus: UserStatus) {
@@ -310,7 +308,7 @@ export class VideoAnalyzer {
       return 'Not Present';
     }
     if (userStatus === UserStatus.EATING) {
-      return 'eating';
+      return 'Eating';
     }
     if (userStatus === UserStatus.PHONE) {
       return 'In Call';
@@ -340,6 +338,10 @@ export class VideoAnalyzer {
       this.drawRectangle(this.ctx, faceBox);
       this.drawRectangle(this.ctx, handBox);
 
+      // this.drawRectangle(this.ctx, faceLowerPart);
+      // this.drawRectangle(this.ctx, faceLeftPart);
+      // this.drawRectangle(this.ctx, faceRightPart);
+
       if (this.overlap(faceLowerPart, handBox) > 0.3) {
         return UserStatus.EATING;
       }
@@ -350,9 +352,6 @@ export class VideoAnalyzer {
         return UserStatus.PHONE;
       }
 
-      // this.drawRectangle(this.ctx, faceLowerPart);
-      // this.drawRectangle(this.ctx, faceLeftPart);
-      // this.drawRectangle(this.ctx, faceRightPart);
     }
     return UserStatus.WORKING;
   }
@@ -364,17 +363,21 @@ export class VideoAnalyzer {
     const B = rect.normalize({x1: box2.topLeft[0], y1: box2.topLeft[1],
                x2: box2.bottomRight[0], y2: box2.bottomRight[1]});
     if (rect.intersect(A, B)) {
-      console.log(rect.intersection(A, B));
-      return rect.area(rect.intersection(A, B)) / rect.area(A); // Intersection rectangle
+      const I = rect.intersection(A, B);
+      this.drawRectangle(this.ctx, {
+        bottomRight: [I.x2, I.y2],
+        topLeft: [I.x1, I.y1]
+      }, '#FF0000');
+      return rect.area(I) / rect.area(A); // Intersection rectangle
     }
     return 0;
   }
 
   lowerBoxOf(box: { bottomRight: number[]; topLeft: number[]; }, percentage: number) {
-    const newHeight = (box.bottomRight[1] - box.topLeft[1]) * percentage;
+    const newHeight = Math.abs(box.bottomRight[1] - box.topLeft[1]) * (1 - percentage);
     return {
-      bottomRight: box.bottomRight,
-      topLeft: [box.topLeft[0], box.bottomRight[0] + newHeight]
+      bottomRight: [box.bottomRight[0], box.bottomRight[1] + newHeight],
+      topLeft: box.topLeft
     };
   }
 
@@ -419,9 +422,10 @@ export class VideoAnalyzer {
   }
 
 
-  private drawRectangle(ctx, boundingBox) {
+  private drawRectangle(ctx, boundingBox, color = '#32EEDB') {
     this.ctx.save();
-    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.rect(boundingBox.topLeft[0], boundingBox.topLeft[1],
       boundingBox.bottomRight[0] - boundingBox.topLeft[0],

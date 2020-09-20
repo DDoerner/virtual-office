@@ -21,6 +21,7 @@ export class HomeOfficeComponent implements OnInit {
   public user: User;
   public peers: string[] = [];
   public username: string;
+  public isInFocusMode = false;
 
   private simController = new SimController();
 
@@ -49,6 +50,13 @@ export class HomeOfficeComponent implements OnInit {
 
   public onVideoCloseClicked() {
     this.rtcService.disconnectCall();
+  }
+
+  public async onFocusToggleClicked() {
+    this.isInFocusMode = !this.isInFocusMode;
+    if (this.isInFocusMode) {
+      await this.rtcService.broadcastStatus(UserStatus.FOCUS);
+    }
   }
 
   public isConnected(user: User) {
@@ -92,9 +100,15 @@ export class HomeOfficeComponent implements OnInit {
     this.videoController.myStream$.pipe(
       filter(myStream => myStream !== null && myStream !== undefined),
       take(1)
-    ).subscribe(() => {
+    ).subscribe(async () => {
       // wait until stream has been received before initializing the analyzer
-      new VideoAnalyzer(this.videoController).initialize();
+      const analyzer = new VideoAnalyzer(this.videoController);
+      await analyzer.initialize();
+      analyzer.smoothedStatus$.subscribe(status => {
+        if (!this.isInFocusMode) {
+          this.rtcService.broadcastStatus(status);
+        }
+      });
     });
 
     this.loadingService.dismiss();

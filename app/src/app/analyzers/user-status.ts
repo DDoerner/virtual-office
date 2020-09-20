@@ -5,5 +5,6 @@ export enum UserStatus {
     EATING,
     PHONE,
     TALK,
-    OFFLINE
+    OFFLINE,
+    FOCUS
 }

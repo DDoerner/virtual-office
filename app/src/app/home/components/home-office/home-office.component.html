@@ -1,6 +1,6 @@
 <div class="flex-col centered float">
   <ion-list lines="full">
-    <ion-item-divider class="ion-padding" color="medium">
+    <ion-item-divider class="ion-padding" color="light">
       <div class="centered" style="width: 100%">
         Users in this Office<br /> 
         ({{ roomId }})
@@ -18,14 +18,14 @@
       <ion-item *ngFor="let index of [].constructor(4 - users.length)">
       </ion-item>
     </ng-container>
-    <ion-item-divider class="ion-padding" color="medium" button="true" style="cursor: pointer;" (click)="onLogoutClicked()">
+    <ion-item-divider class="ion-padding" color="light" button="true" style="cursor: pointer;" (click)="onLogoutClicked()">
       <ion-text class="ion-text-center" style="width: 100%">Logout</ion-text>
     </ion-item-divider>
   </ion-list>
 </div>
 
 <div class="actions flex-col">
-  <ion-button color="tertiary" class="ion-margin">
+  <ion-button color="tertiary" [ngClass]="isInFocusMode ? 'focus' : ''" class="ion-margin" (click)="onFocusToggleClicked()">
     <ion-icon slot="icon-only" name="volume-mute-outline"></ion-icon>
   </ion-button>
   <ion-button color="tertiary" class="ion-margin">
