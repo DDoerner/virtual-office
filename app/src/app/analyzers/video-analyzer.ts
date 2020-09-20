@@ -204,8 +204,8 @@ export class VideoAnalyzer {
     private videoController: VideoController
   ) {
     this.currentStatus$.pipe(
-      distinct(),
-      debounce(() => timer(2000))
+      distinct()
+      // debounce(() => timer(2000))
     ).subscribe(this.smoothedStatus$);
 
     this.initialize();
@@ -248,7 +248,8 @@ export class VideoAnalyzer {
     this.handPoseModel = await handPoseTrack.load();
 
     this.videoController.showDebugData$.next(true);
-    setInterval(() => this.renderPrediction(), ANALYZER_INTERVAL);
+    this.renderPrediction();
+    //setInterval(() => this.renderPrediction(), ANALYZER_INTERVAL);
   }
 
   private async renderPrediction() {
@@ -295,6 +296,8 @@ export class VideoAnalyzer {
     this.ctx.scale(1, 1);
     this.ctx.fillText(this.getUserStatusToString(userStatus), VIDEO_SIZE / 2.0, 50);
     this.ctx.restore();
+
+    requestAnimationFrame(() => this.renderPrediction());
   }
 
   private getUserStatusToString(userStatus: UserStatus) {
