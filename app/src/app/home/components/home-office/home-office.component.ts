@@ -106,7 +106,7 @@ export class HomeOfficeComponent implements OnInit {
     ).subscribe(async () => {
       // wait until stream has been received before initializing the analyzer
       const analyzer = new VideoAnalyzer(this.videoController);
-      await analyzer.initialize();
+      // await analyzer.initialize();
       analyzer.smoothedStatus$.subscribe(status => {
         if (!this.isInFocusMode) {
           this.rtcService.broadcastStatus(status);

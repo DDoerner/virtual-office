@@ -218,7 +218,7 @@ export class VideoAnalyzer {
     });
   }
 
-  async initialize() {
+  private async initialize() {
     this.video = this.videoController.streamElement;
     const mobile = this.isMobile();
 
