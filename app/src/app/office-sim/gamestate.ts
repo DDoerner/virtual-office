@@ -101,8 +101,9 @@ export class Player {
         private id: string,
         public gameObject,
         public text,
+        public bubble,
         private position,
-        private state: string,
+        private state: UserStatus,
         public isSelf = false
     ) {
     }
@@ -124,7 +125,10 @@ export class Player {
         this.gameObject.y = p.getY() * TILE_HEIGHT;
 
         this.text.x = p.getX() * TILE_WIDTH - 29;
-        this.text.y = p.getY() * TILE_HEIGHT - 40;
+        this.text.y = p.getY() * TILE_HEIGHT + 26;
+
+        this.bubble.x = p.getX() * TILE_WIDTH  + 30;
+        this.bubble.y = p.getY() * TILE_HEIGHT - 30;
     }
 
     getPosition() {
@@ -133,6 +137,14 @@ export class Player {
 
     getId() {
         return this.id;
+    }
+
+    setState(state) {
+        this.state = state;
+    }
+
+    getState() {
+        return this.state;
     }
 
     public getIsSelf() {
@@ -182,6 +194,29 @@ export class GameState {
         }
     }
 
+    setBubble(player : Player) {
+        if (player.getState() === UserStatus.WORKING) {
+            player.bubble.setTexture('sprite_x32', Math.floor(72 + Math.random() * 8))
+        } else if (player.getState() === UserStatus.AWAY) {
+            player.bubble.setTexture('sprite_x32', 63)
+        }  else if (player.getState() === UserStatus.EATING) {
+            player.bubble.setTexture('sprite_x32', Math.floor(64 + Math.random() * 8))
+        }   else if (player.getState() === UserStatus.PHONE) {
+            player.bubble.setTexture('sprite_x32', Math.floor(80 + Math.random() * 8))
+        }
+    }
+
+    updatePlayers() {
+        this.players.forEach((x) => {
+            var update = Math.random();
+            if (update < 0.5) {
+                this.setBubble(x);
+            }
+            
+        })
+        
+    }
+
     setDND(enabled) {
         const player = this.players.filter((x) => x.getIsSelf())[0]
         const room = this.rooms.filter((x) => x.getPlayer().getId() === player.getId())[0];
@@ -216,7 +251,9 @@ export class GameState {
         }
 
         player.gameObject.setDepth(1);
-        player.text.setDepth(1);
+        player.text.setDepth(2);
+
+        player.setState(state);
 
         if (state == UserStatus.AWAY) {
             const x = Math.floor(2 + Math.random() * 8);
