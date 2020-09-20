@@ -56,6 +56,9 @@ export class HomeOfficeComponent implements OnInit {
     this.isInFocusMode = !this.isInFocusMode;
     if (this.isInFocusMode) {
       await this.rtcService.broadcastStatus(UserStatus.FOCUS);
+      this.simController.setDND(true);
+    } else {
+      this.simController.setDND(false);
     }
   }
 
@@ -107,6 +110,7 @@ export class HomeOfficeComponent implements OnInit {
       analyzer.smoothedStatus$.subscribe(status => {
         if (!this.isInFocusMode) {
           this.rtcService.broadcastStatus(status);
+          this.simController.onPlayerStateChanged(this.user.username, status);
         }
       });
     });
