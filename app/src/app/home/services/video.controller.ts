@@ -26,7 +26,7 @@ export class VideoController {
     }
 
     public setRemoteStream(remoteStream?: MediaStream) {
-        if (this.remoteStream) {
+        if (!remoteStream && this.remoteStream) {
             this.remoteStream?.getTracks().forEach(t => t.stop());
         }
         this.remoteStream$.next(remoteStream);

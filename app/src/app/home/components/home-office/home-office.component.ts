@@ -48,10 +48,6 @@ export class HomeOfficeComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  public onVideoCloseClicked() {
-    this.rtcService.disconnectCall();
-  }
-
   public async onFocusToggleClicked() {
     this.isInFocusMode = !this.isInFocusMode;
     if (this.isInFocusMode) {
@@ -91,6 +87,8 @@ export class HomeOfficeComponent implements OnInit {
       this.userService.getUser().username
     );
 
+    this.videoController.requestStreams();
+
     // register for RTC
     if (!this.rtcService.isRegistered()) {
       await this.rtcService.register(this.userService.getUser().peerId);
@@ -99,7 +97,6 @@ export class HomeOfficeComponent implements OnInit {
     // register event handlers
     this.registerEventHandlers();
 
-    this.videoController.requestStreams();
     this.videoController.myStream$.pipe(
       filter(myStream => myStream !== null && myStream !== undefined),
       take(1)

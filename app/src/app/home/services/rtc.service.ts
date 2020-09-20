@@ -32,7 +32,7 @@ export class RtcService {
     private videoController: VideoController
   ) {
     this.videoController.remoteStream$.subscribe(remoteStream => {
-      if (remoteStream !== null && remoteStream !== undefined) {
+      if (remoteStream === null || remoteStream === undefined) {
         this.disconnectCall();
       }
     });
@@ -72,8 +72,8 @@ export class RtcService {
     }
     const peer = this.activeCall.peer;
     this.activeCall.close();
-    this.videoController.setRemoteStream(null);
     this.activeCall = null;
+    this.videoController.setRemoteStream(null);
     this.sendData(peer, 'hangup', {});
   }
 
