@@ -25,7 +25,7 @@
 </div>
 
 <div class="actions flex-col">
-  <ion-button color="tertiary" class="ion-margin">
+  <ion-button color="tertiary" [ngClass]="isInFocusMode ? 'focus' : ''" class="ion-margin" (click)="onFocusToggleClicked()">
     <ion-icon slot="icon-only" name="volume-mute-outline"></ion-icon>
   </ion-button>
   <ion-button color="tertiary" class="ion-margin">

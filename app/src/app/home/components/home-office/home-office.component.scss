@@ -26,6 +26,15 @@
         height: 60px;
         overflow: hidden;
         box-shadow: 4px 4px 8px 0 rgba(0,0,0,0.2);
+
+        &.focus {
+            box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.2), 
+                0px 0px 20px 5px rgb(245, 34, 34);
+
+            ion-icon {
+                color: red;
+            }
+        }
     }
 
     ion-icon {
